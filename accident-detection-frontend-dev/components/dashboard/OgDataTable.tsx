@@ -1,6 +1,5 @@
 "use client";
-import React, { useState } from "react";
-
+import React from "react";
 import {
   ColumnDef,
   useReactTable,
@@ -8,12 +7,43 @@ import {
   flexRender,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import { Accident, OgAccident, makeData } from "@/helpers/makeData";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { getCookie } from 'cookies-next';
 
-type Props = {};
+export type AllData = {
+  id: number;
+  date: string;
+  availableHospital: { [key: string]: string };
+  sorting: string;
+  accuracy: string;
+};
+
+const fetchAccidents = async () => {
+  const token = getCookie("Authorization");
+  const refreshToken = getCookie("Refresh");
+
+  if (!token || !refreshToken) {
+    throw new Error("No token found");
+  }
+
+  const response = await fetch("http://localhost:8080/api/hospital/accident/combination", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Refresh: `${refreshToken}`
+    },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const data = await response.json();
+  console.log("Fetched data: ", data);
+  return data.allDataList;
+};
 
 export default function OgDataTable({}: Props) {
   const {
@@ -22,100 +52,56 @@ export default function OgDataTable({}: Props) {
     error,
   } = useQuery({
     queryKey: ["accidents"],
-    queryFn: async () => {
-      const response = await fetch("http://127.0.0.1:8080/api/v1/accident/all");
-      return await response.json();
-    },
+    queryFn: fetchAccidents,
   });
 
+  console.log("Accidents data: ", accidents);
+
   const sortedAccidents = React.useMemo(() => {
-    if (accidents && accidents.datas) {
-      return [...accidents.datas].sort(
+    if (accidents && accidents.length > 0) {
+      return [...accidents].sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
       );
     }
     return [];
   }, [accidents]);
 
-  const columns = React.useMemo<ColumnDef<OgAccident, any>[]>(
+  const columns = React.useMemo<ColumnDef<AllData, any>[]>(
     () => [
       {
         accessorFn: (row) => row.id,
-        id: "time",
-        cell: (info) => info.getValue().slice(0, 5) + "...",
-        header: () => <span>Time</span>,
-        footer: () => <span>Time</span>,
+        id: "id",
+        cell: (info) => info.getValue(),
+        header: () => <span>ID</span>,
+        footer: () => <span>ID</span>,
       },
       {
         accessorFn: (row) => row.date,
-        id: "latitute",
+        id: "date",
         cell: (info) => info.getValue(),
-        header: () => <span>Latitute</span>,
-        footer: () => <span>Latitute</span>,
+        header: () => <span>Date</span>,
+        footer: () => <span>Date</span>,
       },
       {
-        accessorFn: (row) => row.address,
-        id: "longitude",
+        accessorFn: (row) => Object.entries(row.availableHospital).map(([name, tel]) => `${name}: ${tel}`).join(", "),
+        id: "availableHospital",
         cell: (info) => info.getValue(),
-        header: () => <span>Longitude</span>,
-        footer: () => <span>Longitude</span>,
-      },
-
-      // {
-      //   accessorFn: (row) => row.city,
-      //   id: "city",
-      //   cell: (info) => info.getValue(),
-      //   header: () => <span>City</span>,
-      //   footer: () => <span>City</span>,
-      // },
-      // {
-      //   accessorFn: (row) => row.latitude,
-      //   id: "latitude",
-      //   cell: (info) => info.getValue(),
-      //   header: () => <span>Latitude</span>,
-      //   footer: () => <span>Latitude</span>,
-      // },
-      // {
-      //   accessorFn: (row) => row.longitude,
-      //   id: "longitude",
-      //   cell: (info) => info.getValue(),
-      //   header: () => <span>Longitude</span>,
-      //   footer: () => <span>Longitude</span>,
-      // },
-      {
-        accessorFn: (row) => row.severityInPercentage,
-        id: "address",
-        cell: (info) => info.getValue(),
-        header: () => <span>Address</span>,
-        footer: () => <span>Address</span>,
+        header: () => <span>Available Hospitals</span>,
+        footer: () => <span>Available Hospitals</span>,
       },
       {
-        accessorFn: (row) => row.severity,
+        accessorFn: (row) => row.sorting,
         id: "sorting",
         cell: (info) => info.getValue(),
         header: () => <span>Sorting</span>,
         footer: () => <span>Sorting</span>,
       },
       {
-        accessorFn: (row) => row.severity,
+        accessorFn: (row) => row.accuracy,
         id: "accuracy",
         cell: (info) => info.getValue(),
         header: () => <span>Accuracy</span>,
         footer: () => <span>Accuracy</span>,
-      },
-      {
-        accessorFn: (row) => row.severity,
-        id: "attach_png",
-        cell: (info) => info.getValue(),
-        header: () => <span>Attach_png</span>,
-        footer: () => <span>Attach_png</span>,
-      },
-      {
-        accessorFn: (row) => row.severity,
-        id: "member_id",
-        cell: (info) => info.getValue(),
-        header: () => <span>Member_id</span>,
-        footer: () => <span>Member_id</span>,
       },
       {
         id: "details",
@@ -136,6 +122,7 @@ export default function OgDataTable({}: Props) {
     ],
     []
   );
+  
 
   const table = useReactTable({
     data: sortedAccidents || [],
@@ -147,10 +134,18 @@ export default function OgDataTable({}: Props) {
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
+  if (error) {
+    return <div>Error loading data</div>;
+  }
+
+  if (!accidents || accidents.length === 0) {
+    return <div>No data available</div>;
+  }
+
   return (
     <div className="overflow-hidden">
-      <h2 className="text-xl sm:text-2xl pb-5">Accident Datas</h2>
-
+      <h2 className="text-xl sm:text-2xl pb-5">Accident Data</h2>
       <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-gray-500">
         <table className="lg:table-fixed bg-white border-collapse overflow-hidden w-full">
           <thead>
@@ -175,7 +170,6 @@ export default function OgDataTable({}: Props) {
               );
             })}
           </thead>
-
           <tbody>
             {table.getRowModel().rows.map((row) => {
               return (
@@ -195,7 +189,6 @@ export default function OgDataTable({}: Props) {
             })}
           </tbody>
         </table>
-
         <div className="pt-3 flex space-x-5 items-center">
           <div>
             <button
@@ -227,19 +220,6 @@ export default function OgDataTable({}: Props) {
               Last
             </button>
           </div>
-
-          {/* <div>
-            <p>Jump to page</p>
-            <input
-              type="number"
-              defaultValue={table.getState().pagination.pageIndex + 1}
-              onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                table.setPageIndex(page);
-              }}
-              className="border p-1 rounded w-16"
-            />
-          </div> */}
           <div>
             <select
               value={table.getState().pagination.pageSize}
