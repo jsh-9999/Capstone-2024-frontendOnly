@@ -25,7 +25,7 @@ export default function TopNavbar({}: Props) {
               <Menu />
             </div>
             <Link href="/auth/bbb">
-              <h2 className="text-xl font-black text-gray-900 cursor-pointer">VCD</h2>
+              <h2 className="text-xl font-black text-gray-900 cursor-pointer"></h2>
             </Link>
         </div>
 
@@ -35,8 +35,8 @@ export default function TopNavbar({}: Props) {
             </li> */}
             <Button
               onClick={() => {
-                deleteCookie("access_token");
-                deleteCookie("refresh_token");
+                deleteCookie("Authorization");
+                deleteCookie("Refresh");
                 window.location.pathname = "/";
               }}
             >

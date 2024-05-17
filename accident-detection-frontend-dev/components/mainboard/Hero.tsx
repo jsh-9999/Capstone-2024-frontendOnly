@@ -15,8 +15,7 @@ export default function Hero({}: Props) {
         <GridContainer className="min-h-[70vh] grid-cols-1 items-center justify-between py-10 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2">
           <div className="space-y-5">
             <h1 className="text-3xl font-black md:text-4xl">
-              CNN-based Vehicle Collision Detection and Emergency Response
-              System
+            CCTV-Based Accident Detection and Automated Emergency Response System
             </h1>
             <p className="font-light sm:text-lg text-gray-400">
               A system that will continuously monitor for the accident through

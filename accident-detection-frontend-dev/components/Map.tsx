@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { GoogleMap, Marker, LoadScriptNext } from '@react-google-maps/api';
+"use client";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+import { GoogleMap, Marker, LoadScriptNext } from "@react-google-maps/api";
 
 interface MapProps {
   location?: { lat: number; lng: number };
 }
 
 const mapContainerStyle = {
-  width: '100vw',
-  height: '100vh',
+  width: "100vw",
+  height: "100vh",
 };
 
 const center = {

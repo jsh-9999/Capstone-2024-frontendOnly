@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -11,58 +13,99 @@ import {
   Customized,
   Cross,
 } from "recharts";
+import { useQuery } from "@tanstack/react-query";
+import { getCookie } from 'cookies-next';
 
 interface DataItem {
-  date: string; // Assuming date is a string in the format "YYYY-MM-DD"
-  // Add other properties here as needed
-}
-
-interface AggregatedData {
-  monthYear: string;
+  region: string;
   count: number;
 }
-// Function to aggregate data month-wise
-const aggregateDataByMonth = (data: DataItem[]): AggregatedData[] => {
-  const monthlyData: { [key: string]: DataItem[] } = {};
 
-  data.forEach((item) => {
-    const date = new Date(item.date);
-    const monthYear = `${date.getFullYear()}-${date.getMonth() + 1}`;
-    if (!monthlyData[monthYear]) {
-      monthlyData[monthYear] = [];
-    }
-    monthlyData[monthYear].push(item);
+// Fetch function to get region-wise accident data
+const fetchRegionAccidentData = async (): Promise<Record<string, number>> => {
+  const token = getCookie("Authorization");
+  const refreshToken = getCookie("Refresh");
+
+  if (!token || !refreshToken) {
+    throw new Error("No token found");
+  }
+
+  const response = await fetch("http://localhost:8080/api/hospital/accident/statistics/region", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Refresh: `${refreshToken}`,
+    },
+    credentials: 'include',
   });
 
-  // Sort the keys (months) in ascending order
-  const sortedMonths = Object.keys(monthlyData).sort();
+  if (!response.ok) {
+    throw new Error("Failed to fetch region-wise accident data");
+  }
 
-  // Map over the sorted keys and return the data
-  return sortedMonths.map((monthYear) => ({
-    monthYear,
-    count: monthlyData[monthYear].length,
-  }));
+  const data = await response.json();
+  console.log("Fetched data: ", data);
+  return data;
 };
-// const aggregateDataByDay = (data) => {
-//   const dailyData = {};
-//   data.forEach((item) => {
-//     const date = new Date(item.date);
-//     const day = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-//     if (!dailyData[day]) {
-//       dailyData[day] = 0;
-//     }
-//     dailyData[day]++;
-//   });
-//   return Object.entries(dailyData).map(([day, count]) => ({
-//     day,
-//     count,
-//   }));
-// };
 
-const CustomizedCross = (props: any) => {
+const CustomChart: React.FC = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["regionAccidentData"],
+    queryFn: fetchRegionAccidentData,
+  });
+
+  const [chartData, setChartData] = useState<DataItem[]>([]);
+
+  useEffect(() => {
+    if (data) {
+      const transformedData = Object.entries(data).map(([region, count]) => ({
+        region,
+        count,
+      }));
+      setChartData(transformedData);
+    }
+  }, [data]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data: {(error as Error).message}</div>;
+
+  return (
+    <ResponsiveContainer width="100%" height={500}>
+      <LineChart
+        width={500}
+        height={300}
+        data={chartData}
+        margin={{
+          top: 5,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="region" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Line type="monotone" dataKey="count" stroke="#8884d8" />
+        <Customized component={CustomizedCross} />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+};
+
+interface CustomizedCrossProps {
+  width?: number;
+  height?: number;
+  stroke?: string;
+  fill?: string;
+  formattedGraphicalItems?: any[];
+}
+
+const CustomizedCross: React.FC<CustomizedCrossProps> = (props) => {
   const { width, height, stroke, fill, formattedGraphicalItems } = props;
-  const firstSeries = formattedGraphicalItems[0];
+  const firstSeries = formattedGraphicalItems?.[0];
   const secondPoint = firstSeries?.props?.points[1];
+
   return (
     <Cross
       y={secondPoint?.y}
@@ -74,35 +117,6 @@ const CustomizedCross = (props: any) => {
       stroke={stroke ?? "#000"}
       fill={fill ?? "none"}
     />
-  );
-};
-
-const CustomChart = ({ datas }: any) => {
-  const final = aggregateDataByMonth(datas);
-  return (
-    <ResponsiveContainer width="100%" height={500}>
-      <LineChart
-        width={500}
-        height={300}
-        data={final}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        {/* <XAxis dataKey="date" /> */}
-        <XAxis dataKey="monthYear" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        {/* <Line type="monotone" dataKey="severityInPercentage" stroke="#8884d8" /> */}
-        <Line type="monotone" dataKey="count" stroke="#8884d8" />
-        <Customized component={CustomizedCross} />
-      </LineChart>
-    </ResponsiveContainer>
   );
 };
 

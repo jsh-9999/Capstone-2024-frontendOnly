@@ -8,6 +8,10 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    config.output.publicPath = '/_next/';
+    return config;
+  },
 };
 
 module.exports = nextConfig;

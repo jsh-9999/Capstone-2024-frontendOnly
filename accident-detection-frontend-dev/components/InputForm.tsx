@@ -12,6 +12,7 @@ type FormProps = {
 
 const InputForm = () => {
   const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
   const [video, setVideo] = useState<string | null>(null);
   const { register, handleSubmit, watch, setValue } = useForm<FormProps>();
 
@@ -110,7 +111,7 @@ const InputForm = () => {
           <form onSubmit={handleSubmit(onSubmitVideoFile)}>
             <div>
               <label htmlFor="image" className="uppercase min-h-[200px] md:min-h-[400px] py-10 border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
-                {video ? "Uploaded Successfully" : "Click to upload video file"}
+                {fileName ? `Selected file: ${fileName}` : "Click to upload video file"}
               </label>
               <input
                 type="file"
@@ -120,7 +121,9 @@ const InputForm = () => {
                 accept="video/*"
                 onChange={(e) => {
                   if (e.target.files.length > 0) {
-                    setFile(e.target.files[0]);
+                    const selectedFile = e.target.files[0];
+                    setFile(selectedFile);
+                    setFileName(selectedFile.name);
                   }
                 }}
               />
@@ -145,4 +148,3 @@ const InputForm = () => {
 };
 
 export default InputForm;
-

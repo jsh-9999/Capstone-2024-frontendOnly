@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getCookie } from "cookies-next";
 import {
   ColumnDef,
   useReactTable,
@@ -7,12 +9,9 @@ import {
   flexRender,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { getCookie } from 'cookies-next';
+import { useRouter } from "next/navigation";
 
-export type AllData = {
+export type AllDataResponseDto = {
   id: number;
   date: string;
   availableHospital: { [key: string]: string };
@@ -20,7 +19,7 @@ export type AllData = {
   accuracy: string;
 };
 
-const fetchAccidents = async () => {
+const fetchAccidents = async (): Promise<AllDataResponseDto[]> => {
   const token = getCookie("Authorization");
   const refreshToken = getCookie("Refresh");
 
@@ -28,45 +27,40 @@ const fetchAccidents = async () => {
     throw new Error("No token found");
   }
 
-  const response = await fetch("http://localhost:8080/api/hospital/accident/combination", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Refresh: `${refreshToken}`
-    },
-    credentials: 'include',
-  });
+  const response = await fetch(
+    "http://localhost:8080/api/hospital/accident/combination",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Refresh: `${refreshToken}`,
+      },
+      credentials: "include",
+    }
+  );
 
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
 
-  const data = await response.json();
-  console.log("Fetched data: ", data);
-  return data.allDataList;
+  const data: AllDataResponseDto[] = await response.json();
+  return data;
 };
 
-export default function OgDataTable({}: Props) {
-  const {
-    data: accidents,
-    isLoading,
-    error,
-  } = useQuery({
+export default function OgDataTable({}) {
+  const router = useRouter();
+  const { data: accidents, isLoading, error } = useQuery<AllDataResponseDto[]>({
     queryKey: ["accidents"],
     queryFn: fetchAccidents,
   });
 
-  console.log("Accidents data: ", accidents);
-
   const sortedAccidents = React.useMemo(() => {
     if (accidents && accidents.length > 0) {
-      return [...accidents].sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
+      return [...accidents].sort((a, b) => a.id - b.id);
     }
     return [];
   }, [accidents]);
 
-  const columns = React.useMemo<ColumnDef<AllData, any>[]>(
+  const columns = React.useMemo<ColumnDef<AllDataResponseDto, any>[]>(
     () => [
       {
         accessorFn: (row) => row.id,
@@ -83,9 +77,20 @@ export default function OgDataTable({}: Props) {
         footer: () => <span>Date</span>,
       },
       {
-        accessorFn: (row) => Object.entries(row.availableHospital).map(([name, tel]) => `${name}: ${tel}`).join(", "),
+        accessorFn: (row) => row.availableHospital,
         id: "availableHospital",
-        cell: (info) => info.getValue(),
+        cell: (info) =>
+          Object.entries(info.getValue() as { [key: string]: string })
+            .map(([name, tel]) => (
+              <span
+                key={name}
+                onClick={() => handleViewDetails(name)}
+                className="cursor-pointer text-blue-500"
+              >
+                {name}: {tel}
+              </span>
+            ))
+            .reduce((prev, curr) => [prev, ", ", curr]),
         header: () => <span>Available Hospitals</span>,
         footer: () => <span>Available Hospitals</span>,
       },
@@ -103,26 +108,13 @@ export default function OgDataTable({}: Props) {
         header: () => <span>Accuracy</span>,
         footer: () => <span>Accuracy</span>,
       },
-      {
-        id: "details",
-        cell: (info) => (
-          <Link
-            href={`accident/${info.row.original.id}`}
-            className="flex items-center justify-center space-x-1 text-orange-600 font-bold underline"
-          >
-            <span>View</span>
-            <span>
-              <ArrowUpRight width={20} height={20} />
-            </span>
-          </Link>
-        ),
-        header: () => <span>View Details</span>,
-        footer: () => <span>View Details</span>,
-      },
     ],
     []
   );
-  
+
+  const handleViewDetails = (hospitalName: string) => {
+    router.push(`/dashboard/Map?hospital=${encodeURIComponent(hospitalName)}`);
+  };
 
   const table = useReactTable({
     data: sortedAccidents || [],

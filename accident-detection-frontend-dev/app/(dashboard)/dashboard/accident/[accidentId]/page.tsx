@@ -32,7 +32,7 @@
 //     queryKey: ["accident", params.accidentId],
 //     queryFn: async () => {
 //       const response = await fetch(
-//         `http://127.0.0.1:8080/api/v1/accident/${params.accidentId}`
+//         `http://localhost:8080/api/hospital/accident/statistics/month`
 //       );
 //       return await response.json();
 //     },

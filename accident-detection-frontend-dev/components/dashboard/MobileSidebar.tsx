@@ -60,7 +60,7 @@ export default function MobileSidebar({}: Props) {
     <div className={cn("hidden lg:block", showSidebar ? "block" : "hidden")}>
       <div className="text-gray-100 fixed scrollbar scrollbar-medium scrollbar-thumb-gray-400 scrollbar-track-gray-200 top-0 left-0 bottom-0 overflow-y-auto px-5 md:px-5 py-6 min-h-screen min-w-[280px] bg-gray-900 shadow-sm border-r-2">
         <div className="flex space-x-5 items-center justify-between pb-10">
-          <Link href="/">
+          <Link href="/auth/bbb">
             <h2 className="text-xl font-black">VCD</h2>
           </Link>
           <div
