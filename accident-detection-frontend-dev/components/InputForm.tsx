@@ -120,8 +120,9 @@ const InputForm = () => {
                 className="hidden"
                 accept="video/*"
                 onChange={(e) => {
-                  if (e.target.files.length > 0) {
-                    const selectedFile = e.target.files[0];
+                  const files = e.target.files;
+                  if (files && files.length > 0) {
+                    const selectedFile = files[0];
                     setFile(selectedFile);
                     setFileName(selectedFile.name);
                   }
