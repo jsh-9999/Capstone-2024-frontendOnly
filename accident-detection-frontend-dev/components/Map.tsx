@@ -37,7 +37,7 @@ const Map: React.FC<MapProps> = ({ location }) => {
         >
           {location && <Marker position={location} />}
         </GoogleMap>
-      ) : null}
+      ) : <></>}
     </LoadScriptNext>
   );
 };
