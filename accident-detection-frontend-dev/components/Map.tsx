@@ -1,6 +1,5 @@
 "use client";
-import dynamic from "next/dynamic";
-import { useState } from "react";
+import React, { useState } from "react";
 import { GoogleMap, Marker, LoadScriptNext } from "@react-google-maps/api";
 
 interface MapProps {
