@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation"; 
 import { setCookie } from 'cookies-next';
+
 type FormData = {
   username: string;
   password: string;
@@ -30,15 +31,13 @@ export default function LoginForm() {
       });
 
       if (!response.ok) {
-        // 응답이 성공적이지 않을 경우, 응답 본문이 아닌 헤더를 기반으로 오류 처리를 수행
         const errorMessage = response.headers.get('X-Error-Message') || 'Login failed. Please try again.';
         toast.error(errorMessage);
         return;
       }
-      
-      // 헤더에서 인증 토큰 추출
-      const getCookies = () => {
-        return document.cookie.split(';').reduce((acc, cookie) => {
+
+      const getCookies = (): Record<string, string> => {
+        return document.cookie.split(';').reduce((acc: Record<string, string>, cookie) => {
           const [key, value] = cookie.split('=').map(part => decodeURIComponent(part.trim()));
           acc[key] = value;
           return acc;
@@ -49,12 +48,10 @@ export default function LoginForm() {
       const accessToken = cookies['Authorization'];
       const refreshToken = cookies['Refresh'];
       
-
       if (accessToken && refreshToken) {
         setCookie('Authorization', accessToken, {
           maxAge: 60 * 60 * 24,
           path: '/',
-          
         });
         setCookie('Refresh', refreshToken, {
           maxAge: 60 * 60 * 24 * 30,
