@@ -3,8 +3,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation"; 
-import { setCookie } from 'cookies-next';
+import { useRouter } from "next/navigation";
 
 type FormData = {
   username: string;
@@ -36,34 +35,8 @@ export default function LoginForm() {
         return;
       }
 
-      const cookies = response.headers.get('set-cookie');
-      if (cookies) {
-        const accessToken = cookies.split('Authorization=')[1]?.split(';')[0];
-        const refreshToken = cookies.split('Refresh=')[1]?.split(';')[0];
-
-        if (accessToken && refreshToken) {
-          setCookie('Authorization', accessToken, {
-            maxAge: 60 * 60 * 24,
-            path: '/',
-            secure: true,
-            sameSite: 'none'
-          });
-          setCookie('Refresh', refreshToken, {
-            maxAge: 60 * 60 * 24 * 30,
-            path: '/',
-            secure: true,
-            sameSite: 'none'
-          });
-          toast.success("Logged in successfully!");
-          router.push("/auth/bbb");
-        } else {
-          console.error('Token not received');
-          toast.error("Authentication token was not received.");
-        }
-      } else {
-        console.error('Cookies not received');
-        toast.error("Cookies were not received from the server.");
-      }
+      toast.success("Logged in successfully!");
+      router.push("/auth/bbb");
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error details:", error.message);
