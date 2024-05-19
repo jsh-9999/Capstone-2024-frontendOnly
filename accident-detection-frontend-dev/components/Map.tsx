@@ -20,10 +20,14 @@ const center = {
 const Map: React.FC<MapProps> = ({ location }) => {
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
+  const handleOnLoad = () => {
+    setScriptLoaded(true);
+  };
+
   return (
     <LoadScriptNext
       googleMapsApiKey="AIzaSyCQiNT9d6MQ7nAYDTyX899gAFGNQ2Ufnrw"
-      onLoad={() => setScriptLoaded(true)}
+      onLoad={handleOnLoad}
     >
       {scriptLoaded ? (
         <GoogleMap
