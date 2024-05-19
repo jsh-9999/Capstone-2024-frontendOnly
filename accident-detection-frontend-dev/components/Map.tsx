@@ -25,7 +25,7 @@ const Map: React.FC<MapProps> = ({ location }) => {
       googleMapsApiKey="AIzaSyCQiNT9d6MQ7nAYDTyX899gAFGNQ2Ufnrw"
       onLoad={() => setScriptLoaded(true)}
     >
-      {scriptLoaded && (
+      {scriptLoaded ? (
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           zoom={8}
@@ -33,7 +33,7 @@ const Map: React.FC<MapProps> = ({ location }) => {
         >
           {location && <Marker position={location} />}
         </GoogleMap>
-      )}
+      ) : null}
     </LoadScriptNext>
   );
 };
