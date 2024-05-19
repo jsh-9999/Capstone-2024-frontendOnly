@@ -17,14 +17,14 @@ export default function Home() {
       router.push('/auth/login');
     } else {
       // 쿠키에 토큰 저장
-      saveTokenToCookie(token);
-      saveRefreshTokenToCookie(refreshToken);
+      saveTokenToCookie(token as string);
+      saveRefreshTokenToCookie(refreshToken as string);
       // SSE 연결 설정하여 알림 수신
       setupSSEConnection();
     }
   }, [router]);
 
-  const saveTokenToCookie = (token) => {
+  const saveTokenToCookie = (token : string) => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 7); // 7일 후 만료
     setCookie("Authorization", token, {
@@ -33,7 +33,7 @@ export default function Home() {
     });
   };
 
-  const saveRefreshTokenToCookie = (refreshToken) => {
+  const saveRefreshTokenToCookie = (refreshToken : string) => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 14); // 14일 후 만료
     setCookie("Refresh", refreshToken, {
