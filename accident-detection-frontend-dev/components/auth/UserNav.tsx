@@ -30,7 +30,7 @@ export default function UserNav({}: Props) {
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none select-none">
         <Avatar className="select-none">
-          <AvatarImage src="https://github.com/ebraj.png" alt="@ebraj" />
+          {/* <AvatarImage src="https://github.com/ebraj.png" alt="@ebraj" /> */}
           <AvatarFallback>EG</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
