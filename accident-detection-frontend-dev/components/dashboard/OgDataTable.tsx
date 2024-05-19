@@ -79,18 +79,28 @@ export default function OgDataTable({}) {
       {
         accessorFn: (row) => row.availableHospital,
         id: "availableHospital",
-        cell: (info) =>
-          Object.entries(info.getValue() as { [key: string]: string })
-            .map(([name, tel]) => (
-              <span
-                key={name}
-                onClick={() => handleViewDetails(name)}
-                className="cursor-pointer text-blue-500"
-              >
-                {name}: {tel}
-              </span>
-            ))
-            .reduce((prev, curr) => [prev, ", ", curr]),
+        cell: (info) => {
+          const hospitals = Object.entries(
+            info.getValue() as { [key: string]: string }
+          ).map(([name, tel]) => (
+            <span
+              key={name}
+              onClick={() => handleViewDetails(name)}
+              className="cursor-pointer text-blue-500"
+            >
+              {name}: {tel}
+            </span>
+          ));
+          return (
+            <>
+              {hospitals.reduce<React.ReactNode[]>((acc, curr, index) => {
+                if (index > 0) acc.push(", ");
+                acc.push(curr);
+                return acc;
+              }, [])}
+            </>
+          );
+        },
         header: () => <span>Available Hospitals</span>,
         footer: () => <span>Available Hospitals</span>,
       },

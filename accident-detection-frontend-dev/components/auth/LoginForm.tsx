@@ -64,8 +64,13 @@ export default function LoginForm() {
         toast.error("Authentication token was not received.");
       }
     } catch (error) {
-      console.error("Error details:", error.message);
-      toast.error(`An error occurred: ${error.message || "Please try again later."}`);
+      if (error instanceof Error) {
+        console.error("Error details:", error.message);
+        toast.error(`An error occurred: ${error.message || "Please try again later."}`);
+      } else {
+        console.error("Unexpected error:", error);
+        toast.error("An unexpected error occurred. Please try again later.");
+      }
     }
   };
 
