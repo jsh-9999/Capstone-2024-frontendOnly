@@ -18,7 +18,7 @@ const InputForm = () => {
 
   const videoUrl = watch("videoUrl");
 
-  const onSubmitVideoUrl = async (data) => {
+  const onSubmitVideoUrl = async (data: any) => {
     if (!data.videoUrl) return;
 
     setVideo(data.videoUrl);
