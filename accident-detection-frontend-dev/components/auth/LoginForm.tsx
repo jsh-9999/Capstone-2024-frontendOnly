@@ -53,13 +53,13 @@ export default function LoginForm() {
                 maxAge: 60 * 60 * 24,
                 path: '/',
                 secure: true, // HTTPS 사용 시 설정
-                sameSite: 'strict'
+                sameSite: 'None'
             });
             setCookie('Refresh', refreshToken, {
                 maxAge: 60 * 60 * 24 * 30,
                 path: '/',
                 secure: true, // HTTPS 사용 시 설정
-                sameSite: 'strict'
+                sameSite: 'None'
             });
             toast.success("Logged in successfully!");
             router.push("/auth/bbb");
