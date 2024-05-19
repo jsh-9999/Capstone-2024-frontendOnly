@@ -6,9 +6,14 @@ import Hero from "@/components/mainboard/Hero";
 import Features from "@/components/mainboard/Features";
 import ModelTest from "@/components/mainboard/ModelTest";
 
+interface Notification {
+  message: string;
+  // 필요한 다른 속성들을 여기에 추가할 수 있습니다.
+}
+
 export default function Home() {
   const router = useRouter();
-  const [notification, setNotification] = useState(null);
+  const [notification, setNotification] = useState<Notification | null>(null);
 
   useEffect(() => {
     const token = getCookie("Authorization");
@@ -24,7 +29,7 @@ export default function Home() {
     }
   }, [router]);
 
-  const saveTokenToCookie = (token : string) => {
+  const saveTokenToCookie = (token: string) => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 7); // 7일 후 만료
     setCookie("Authorization", token, {
@@ -33,7 +38,7 @@ export default function Home() {
     });
   };
 
-  const saveRefreshTokenToCookie = (refreshToken : string) => {
+  const saveRefreshTokenToCookie = (refreshToken: string) => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 14); // 14일 후 만료
     setCookie("Refresh", refreshToken, {
@@ -48,7 +53,7 @@ export default function Home() {
     eventSource.addEventListener('sse', (event) => {
       try {
         // JSON 파싱을 시도하기 전에 데이터가 JSON인지 확인
-        const data = JSON.parse(event.data);
+        const data: Notification = JSON.parse(event.data);
         console.log('Notification received:', data);
         setNotification(data);
       } catch (error) {
