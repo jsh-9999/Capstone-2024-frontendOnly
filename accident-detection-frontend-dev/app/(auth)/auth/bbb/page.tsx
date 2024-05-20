@@ -40,7 +40,6 @@ export default function Home() {
     setCookie("Authorization", token, {
       expires,
       path: '/',
-      httpOnly: true,
       secure: true,
       sameSite: 'none'
     });
@@ -53,7 +52,6 @@ export default function Home() {
     setCookie("Refresh", refreshToken, {
       expires,
       path: '/',
-      httpOnly: true,
       secure: true,
       sameSite: 'none'
     });

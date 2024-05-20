@@ -40,8 +40,8 @@ export default function LoginForm() {
       }
 
       // JavaScript to get cookies
-      const getCookies = () => {
-        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+      const getCookies = (): Record<string, string> => {
+        const cookies = document.cookie.split(';').reduce((acc: Record<string, string>, cookie) => {
           const [name, value] = cookie.split('=').map(c => c.trim());
           acc[name] = value;
           return acc;
