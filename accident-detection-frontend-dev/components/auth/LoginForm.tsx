@@ -57,7 +57,7 @@ export default function LoginForm() {
       console.log("AccessToken:", accessToken);
       console.log("RefreshToken:", refreshToken);
 
-      if (accessToken && refreshToken) {
+      if (!accessToken && !refreshToken) {
         setCookie("Authorization", accessToken, {
           maxAge: 60 * 60 * 24,
           path: '/',
