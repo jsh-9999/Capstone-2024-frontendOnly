@@ -28,7 +28,7 @@ const fetchAccidents = async (): Promise<AllDataResponseDto[]> => {
   }
 
   const response = await fetch(
-    "http://localhost:8080/api/hospital/accident/combination",
+    "https://backend-capstone.site/api/hospital/accident/combination",
     {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -30,7 +30,7 @@ const fetchRegionAccidentData = async (): Promise<Record<string, number>> => {
     throw new Error("No token found");
   }
 
-  const response = await fetch("http://localhost:8080/api/hospital/accident/statistics/region", {
+  const response = await fetch("https://backend-capstone.site/api/hospital/accident/statistics/region", {
     headers: {
       Authorization: `Bearer ${token}`,
       Refresh: `${refreshToken}`,

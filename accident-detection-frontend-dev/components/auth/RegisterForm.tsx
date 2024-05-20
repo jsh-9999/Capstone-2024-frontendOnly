@@ -22,7 +22,7 @@ export default function RegisterForm() {
   const handleSignUpSubmit = async (data: FormData) => {
     try {
       // 서버로 회원가입 요청을 보냄
-      const response = await fetch("http://localhost:8080/auth/users/sign-up", {
+      const response = await fetch("https://backend-capstone.site/auth/users/sign-up", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,7 +53,7 @@ export default function RegisterForm() {
   const handleCodeSubmit = async (data: FormData) => {
     try {
       // 서버로 인증번호 요청을 보냄
-      const response = await fetch("http://localhost:8080/auth/users/sign-up/mail", {
+      const response = await fetch("https://backend-capstone.site/auth/users/sign-up/mail", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

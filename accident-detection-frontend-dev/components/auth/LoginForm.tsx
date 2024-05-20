@@ -20,7 +20,7 @@ export default function LoginForm() {
       toast("Logging in...");
       // console.log("Sending login request with data:", data);
 
-      const response = await fetch("http://localhost:8080/auth/users/sign-in", {
+      const response = await fetch("https://backend-capstone.site/auth/users/sign-in", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

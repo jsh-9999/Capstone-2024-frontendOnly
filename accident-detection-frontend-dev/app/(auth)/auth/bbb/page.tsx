@@ -59,7 +59,7 @@ export default function Home() {
 
   const setupSSEConnection = () => {
     console.log("Setting up SSE connection...");
-    const eventSource = new EventSource("http://localhost:8080/api/notify/subscribe", { withCredentials: true });
+    const eventSource = new EventSource("https://backend-capstone.site/api/notify/subscribe", { withCredentials: true });
 
     eventSource.addEventListener('sse', (event) => {
       try {
