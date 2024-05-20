@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCookie, setCookie, removeCookies } from 'cookies-next';
+import { getCookie, setCookie } from 'cookies-next';
 import Hero from "@/components/mainboard/Hero";
 import Features from "@/components/mainboard/Features";
 import ModelTest from "@/components/mainboard/ModelTest";
