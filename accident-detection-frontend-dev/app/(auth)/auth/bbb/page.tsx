@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCookie, setCookie } from 'cookies-next';
+import { getCookie, setCookie, removeCookies } from 'cookies-next';
 import Hero from "@/components/mainboard/Hero";
 import Features from "@/components/mainboard/Features";
 import ModelTest from "@/components/mainboard/ModelTest";
@@ -20,6 +20,7 @@ export default function Home() {
     const refreshToken = getCookie("Refresh");
     console.log("Token:", token);
     console.log("Refresh Token:", refreshToken);
+
     if (!token || !refreshToken) {
       console.log("No token found, redirecting to login page.");
       router.push('/auth/login');
@@ -39,6 +40,9 @@ export default function Home() {
     setCookie("Authorization", token, {
       expires,
       path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
     });
   };
 
@@ -49,6 +53,9 @@ export default function Home() {
     setCookie("Refresh", refreshToken, {
       expires,
       path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
     });
   };
 
@@ -58,7 +65,6 @@ export default function Home() {
 
     eventSource.addEventListener('sse', (event) => {
       try {
-        // JSON 파싱을 시도하기 전에 데이터가 JSON인지 확인
         const data: Notification = JSON.parse(event.data);
         console.log('Notification received:', data);
         setNotification(data);
