@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCookie, setCookie, removeCookies } from 'cookies-next';
+import { getCookie, setCookie } from 'cookies-next';
 import Hero from "@/components/mainboard/Hero";
 import Features from "@/components/mainboard/Features";
 import ModelTest from "@/components/mainboard/ModelTest";
@@ -20,11 +20,6 @@ export default function Home() {
     const refreshToken = getCookie("Refresh");
     console.log("Token:", token);
     console.log("Refresh Token:", refreshToken);
-    
-    // Clear any existing cookies before setting new ones
-    removeCookies("Authorization");
-    removeCookies("Refresh");
-
     if (!token || !refreshToken) {
       console.log("No token found, redirecting to login page.");
       router.push('/auth/login');
@@ -44,8 +39,6 @@ export default function Home() {
     setCookie("Authorization", token, {
       expires,
       path: '/',
-      httpOnly: true,
-      secure: true,
     });
   };
 
@@ -56,8 +49,6 @@ export default function Home() {
     setCookie("Refresh", refreshToken, {
       expires,
       path: '/',
-      httpOnly: true,
-      secure: true,
     });
   };
 
