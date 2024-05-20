@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCookie, setCookie } from 'cookies-next';
+import { getCookie, setCookie, removeCookies } from 'cookies-next';
 import Hero from "@/components/mainboard/Hero";
 import Features from "@/components/mainboard/Features";
 import ModelTest from "@/components/mainboard/ModelTest";
@@ -18,7 +18,15 @@ export default function Home() {
   useEffect(() => {
     const token = getCookie("Authorization");
     const refreshToken = getCookie("Refresh");
+    console.log("Token:", token);
+    console.log("Refresh Token:", refreshToken);
+    
+    // Clear any existing cookies before setting new ones
+    removeCookies("Authorization");
+    removeCookies("Refresh");
+
     if (!token || !refreshToken) {
+      console.log("No token found, redirecting to login page.");
       router.push('/auth/login');
     } else {
       // 쿠키에 토큰 저장
@@ -32,22 +40,29 @@ export default function Home() {
   const saveTokenToCookie = (token: string) => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 7); // 7일 후 만료
+    console.log("Saving token to cookie with expiry date:", expires);
     setCookie("Authorization", token, {
       expires,
       path: '/',
+      httpOnly: true,
+      secure: true,
     });
   };
 
   const saveRefreshTokenToCookie = (refreshToken: string) => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 14); // 14일 후 만료
+    console.log("Saving refresh token to cookie with expiry date:", expires);
     setCookie("Refresh", refreshToken, {
       expires,
       path: '/',
+      httpOnly: true,
+      secure: true,
     });
   };
 
   const setupSSEConnection = () => {
+    console.log("Setting up SSE connection...");
     const eventSource = new EventSource("http://localhost:8080/api/notify/subscribe", { withCredentials: true });
 
     eventSource.addEventListener('sse', (event) => {

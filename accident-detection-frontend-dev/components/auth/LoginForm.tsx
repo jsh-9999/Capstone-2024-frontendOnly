@@ -17,6 +17,7 @@ export default function LoginForm() {
   const handleLoginSubmit = async (data: FormData) => {
     try {
       toast("Logging in...");
+      console.log("Sending login request with data:", data);
       const response = await fetch("http://localhost:8080/auth/users/sign-in", {
         method: "POST",
         headers: {
@@ -29,11 +30,16 @@ export default function LoginForm() {
         credentials: 'include'
       });
 
+      console.log("Login response status:", response.status);
+      console.log("Login response headers:", response.headers);
       if (!response.ok) {
         const errorMessage = response.headers.get('X-Error-Message') || 'Login failed. Please try again.';
         toast.error(errorMessage);
         return;
       }
+
+      const responseData = await response.json();
+      console.log("Login response data:", responseData);
 
       toast.success("Logged in successfully!");
       router.push("/auth/bbb");
