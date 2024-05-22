@@ -43,6 +43,8 @@ export default function LoginForm() {
       document.cookie = "safeCookie2=foo";
       document.cookie = "crossCookie=bar; SameSite=None; Secure";
 
+      console.log("document.cookie:", document.cookie);
+
       // JavaScript to get cookies
       const getCookies = (): Record<string, string> => {
         const cookies = document.cookie.split(';').reduce((acc: Record<string, string>, cookie) => {
@@ -61,7 +63,7 @@ export default function LoginForm() {
       console.log("AccessToken:", accessToken);
       console.log("RefreshToken:", refreshToken);
 
-      if (!accessToken && !refreshToken) {
+      if (accessToken && refreshToken) {
         setCookie("Authorization", accessToken, {
           maxAge: 60 * 60 * 24,
           path: '/',
