@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
@@ -18,7 +18,6 @@ export default function LoginForm() {
   const handleLoginSubmit = async (data: FormData) => {
     try {
       toast("Logging in...");
-      // console.log("Sending login request with data:", data);
 
       const response = await fetch("https://backend-capstone.site/auth/users/sign-in", {
         method: "POST",
@@ -38,6 +37,11 @@ export default function LoginForm() {
         toast.error(errorMessage);
         return;
       }
+
+      // JavaScript to set cookies
+      document.cookie = "safeCookie1=foo; SameSite=Lax";
+      document.cookie = "safeCookie2=foo";
+      document.cookie = "crossCookie=bar; SameSite=None; Secure";
 
       // JavaScript to get cookies
       const getCookies = (): Record<string, string> => {
