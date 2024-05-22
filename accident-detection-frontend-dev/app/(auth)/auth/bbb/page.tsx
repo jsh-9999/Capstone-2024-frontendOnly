@@ -21,7 +21,7 @@ export default function Home() {
     console.log("Token:", token);
     console.log("Refresh Token:", refreshToken);
 
-    if (!token || !refreshToken) {
+    if (token || refreshToken) {
       console.log("No token found, redirecting to login page.");
       router.push('/auth/login');
     } else {
