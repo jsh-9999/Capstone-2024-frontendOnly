@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
@@ -38,32 +38,15 @@ export default function LoginForm() {
         return;
       }
 
-      // JavaScript to set cookies
-      document.cookie = "safeCookie1=foo; SameSite=Lax";
-      document.cookie = "safeCookie2=foo";
-      document.cookie = "crossCookie=bar; SameSite=None; Secure";
+      // 응답 헤더에서 토큰 추출
+      const accessToken = response.headers.get('Authorization');
+      const refreshToken = response.headers.get('Refresh');
 
-      console.log("document.cookie:", document.cookie);
-
-      // JavaScript to get cookies
-      const getCookies = (): Record<string, string> => {
-        const cookies = document.cookie.split(';').reduce((acc: Record<string, string>, cookie) => {
-          const [name, value] = cookie.split('=').map(c => c.trim());
-          acc[name] = value;
-          return acc;
-        }, {});
-        return cookies;
-      };
-
-      const cookies = getCookies();
-      const accessToken = cookies["Authorization"];
-      const refreshToken = cookies["Refresh"];
-
-      console.log("Cookies:", cookies);
       console.log("AccessToken:", accessToken);
       console.log("RefreshToken:", refreshToken);
 
       if (accessToken && refreshToken) {
+        // 토큰을 쿠키에 저장
         setCookie("Authorization", accessToken, {
           maxAge: 60 * 60 * 24,
           path: '/',
@@ -103,6 +86,7 @@ export default function LoginForm() {
           </label>
           <input
             type="text"
+            id="username"
             className="w-full px-4 py-3 rounded-md border outline-none"
             autoComplete="off"
             {...register("username")}
@@ -117,6 +101,7 @@ export default function LoginForm() {
           </label>
           <input
             type="password"
+            id="password"
             className="w-full px-4 py-3 rounded-md border outline-none"
             autoComplete="off"
             {...register("password")}

@@ -1,119 +1,151 @@
-'use client'
-import React from "react";
+"use client";
+import dynamic from "next/dynamic";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "../ui/button";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { setCookie } from 'cookies-next';
 
-type FormData = {
-  username: string;
-  password: string;
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
+
+type FormProps = {
+  image: FileList;
+  videoUrl: string;
 };
 
-export default function LoginForm() {
-  const router = useRouter();
-  const { register, formState: { errors }, handleSubmit } = useForm<FormData>();
+const InputForm = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [video, setVideo] = useState<string | null>(null);
+  const { register, handleSubmit, watch, setValue } = useForm<FormProps>();
 
-  const handleLoginSubmit = async (data: FormData) => {
-    try {
-      toast("Logging in...");
+  const videoUrl = watch("videoUrl");
 
-      const response = await fetch("https://backend-capstone.site/auth/users/sign-in", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: data.username,
-          password: data.password,
-        }),
-        credentials: 'include'
-      });
+  const onSubmitVideoUrl = async (data: any) => {
+    if (!data.videoUrl) return;
 
-      console.log("Login response status:", response.status);
-      if (!response.ok) {
-        const errorMessage = response.headers.get('X-Error-Message') || 'Login failed. Please try again.';
-        toast.error(errorMessage);
-        return;
-      }
+    setVideo(data.videoUrl);
 
-      // 응답 헤더에서 토큰 추출
-      const accessToken = response.headers.get('Authorization');
-      const refreshToken = response.headers.get('Refresh');
+    const response = await fetch("http://127.0.0.1:5000/api/v1/public/upload-link", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ video_link: data.videoUrl })
+    });
 
-      console.log("AccessToken:", accessToken);
-      console.log("RefreshToken:", refreshToken);
-
-      if (accessToken && refreshToken) {
-        // 토큰을 쿠키에 저장
-        setCookie("Authorization", accessToken, {
-          maxAge: 60 * 60 * 24,
-          path: '/',
-          secure: true,
-          sameSite: 'none'
-        });
-        setCookie("Refresh", refreshToken, {
-          maxAge: 60 * 60 * 24 * 30,
-          path: '/',
-          secure: true,
-          sameSite: 'none'
-        });
-        toast.success("Logged in successfully!");
-        router.push("/auth/bbb");
-      } else {
-        console.error('Token not received');
-        toast.error("Authentication token was not received.");
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error details:", error.message);
-        toast.error(`An error occurred: ${error.message || "Please try again later."}`);
-      } else {
-        console.error("Unexpected error:", error);
-        toast.error("An unexpected error occurred. Please try again later.");
-      }
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+      return;
+    }
+    const responseData = await response.json();
+    if (responseData.hls_url) {
+      setVideo(responseData.hls_url);
+    } else if (response.redirected) {
+      window.location.href = response.url;
+    } else {
+      console.error("Server did not return a valid HLS URL.");
     }
   };
 
+  const onSubmitVideoFile = async () => {
+    if (file) {
+      const localVideoUrl = URL.createObjectURL(file);
+      setVideo(localVideoUrl);
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const uploadResponse = await fetch("http://127.0.0.1:5000/api/v1/public/upload-video", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        console.error("Failed to upload video.");
+      } else {
+        console.log("Video uploaded successfully.");
+      }
+    } else {
+      console.error("No file selected or invalid file type.");
+    }
+  };
+
+  // Handler for sending location
+  const onSendLocation = () => {
+    // Logic to send location goes here
+    console.log("Location sending logic here");
+  };
+
   return (
-    <div className="sm:max-w-[460px] shadow-sm mx-auto bg-white p-5 border rounded-md">
-      <h2 className="text-2xl font-bold pb-5 text-center underline">Login</h2>
-      <form onSubmit={handleSubmit(handleLoginSubmit)} className="space-y-5">
-        <div className="space-y-2">
-          <label htmlFor="username">
-            UserId <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="username"
-            className="w-full px-4 py-3 rounded-md border outline-none"
-            autoComplete="off"
-            {...register("username")}
-          />
-          <span className="inline-block text-sm text-red-500">
-            {errors.username && errors.username.message}
-          </span>
+    <main className="max-w-[900px] min-h-[400px] mx-auto">
+      {video ? (
+        <div className="w-full min-h-[200px] md:min-h-[400px] border-4 rounded-md border-dashed p-1">
+          <ReactPlayer url={video} playing width="100%" height="100%" />
         </div>
-        <div className="space-y-2">
-          <label htmlFor="password">
-            Password <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="password"
-            id="password"
-            className="w-full px-4 py-3 rounded-md border outline-none"
-            autoComplete="off"
-            {...register("password")}
-          />
-          <span className="inline-block text-sm text-red-500">
-            {errors.password && errors.password.message}
-          </span>
-        </div>
-        <Button type="submit" className="w-full" size={"lg"}>
-          Login
-        </Button>
-      </form>
-    </div>
+      ) : (
+        <>
+          <form onSubmit={handleSubmit(onSubmitVideoUrl)} className="space-y-4">
+            <div>
+              <label htmlFor="videoUrl" className="block text-sm font-medium text-gray-700">
+                Real Time RTSP CCTV
+              </label>
+              <input
+                type="text"
+                {...register("videoUrl")}
+                id="videoUrl"
+                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                placeholder="Enter video URL"
+              />
+              <div className="flex justify-between">
+                <button
+                  type="submit"
+                  className="font-bold py-2 px-4 bg-blue-500 rounded-md text-white"
+                >
+                  Submit Video URL
+                </button>
+                <button
+                  type="button" // This should be `type="button"` to prevent form submission
+                  className="font-bold py-2 px-4 bg-green-500 rounded-md text-white"
+                  onClick={onSendLocation}
+                >
+                  Send Location
+                </button>
+              </div>
+            </div>
+          </form>
+          <form onSubmit={handleSubmit(onSubmitVideoFile)}>
+            <div>
+              <label htmlFor="image" className="uppercase min-h-[200px] md:min-h-[400px] py-10 border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
+                {fileName ? `Selected file: ${fileName}` : "Click to upload video file"}
+              </label>
+              <input
+                type="file"
+                {...register("image")}
+                id="image"
+                className="hidden"
+                accept="video/*"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length > 0) {
+                    const selectedFile = files[0];
+                    setFile(selectedFile);
+                    setFileName(selectedFile.name);
+                  }
+                }}
+              />
+              <button
+                type="submit"
+                className="font-bold py-4 px-8 bg-gray-900 rounded-md text-white w-full"
+              >
+                Submit this Video
+              </button>
+            </div>
+          </form>
+          {video && (
+            <div id="videoModal" className="video-modal">
+              <ReactPlayer url={video} playing width="100%" height="100%" />
+              <button onClick={() => setVideo(null)}>Close</button>
+            </div>
+          )}
+        </>
+      )}
+    </main>
   );
-}
+};
+
+export default InputForm;
