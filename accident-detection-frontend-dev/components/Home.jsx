@@ -27,8 +27,8 @@ const Home = () => {
     });
 
     eventSource.addEventListener('message', (event) => {
+      console.log('Raw event data:', event.data); // Raw event data 확인
       try {
-        console.log('Raw event data:', event.data); // Raw event data 확인
         const data = JSON.parse(event.data);
         console.log('Notification received:', data);
         setNotification(data);
@@ -38,10 +38,11 @@ const Home = () => {
     });
 
     eventSource.addEventListener('error', (error) => {
+      console.error('SSE error:', error);
       if (error.readyState === EventSource.CLOSED) {
         console.log('SSE connection was closed');
       } else {
-        console.error('SSE error:', error);
+        console.error('An unknown error occurred:', error);
       }
       eventSource.close(); // 오류 발생 시 연결 종료
     });
