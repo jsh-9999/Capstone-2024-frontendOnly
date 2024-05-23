@@ -16,17 +16,19 @@ export default function Home() {
   const [notification, setNotification] = useState<Notification | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("Authorization");
-    const refreshToken = localStorage.getItem("Refresh");
-    console.log("Token:", token);
-    console.log("Refresh Token:", refreshToken);
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem("Authorization");
+      const refreshToken = localStorage.getItem("Refresh");
+      console.log("Token:", token);
+      console.log("Refresh Token:", refreshToken);
 
-    if (!token || !refreshToken) {
-      console.log("No token found, redirecting to login page.");
-      router.push('/auth/login');
-    } else {
-      // SSE 연결 설정하여 알림 수신
-      setupSSEConnection(token, refreshToken);
+      if (!token || !refreshToken) {
+        console.log("No token found, redirecting to login page.");
+        router.push('/auth/login');
+      } else {
+        // SSE 연결 설정하여 알림 수신
+        setupSSEConnection(token, refreshToken);
+      }
     }
   }, [router]);
 
