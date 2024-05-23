@@ -1,4 +1,4 @@
-// components/Home.tsx
+// components/Home.jsx
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -7,16 +7,11 @@ import Features from "@/components/mainboard/Features";
 import ModelTest from "@/components/mainboard/ModelTest";
 import { EventSourcePolyfill } from 'event-source-polyfill';
 
-interface Notification {
-  message: string;
-  // 필요한 다른 속성들을 여기에 추가할 수 있습니다.
-}
-
-const Home: React.FC = () => {
+const Home = () => {
   const router = useRouter();
-  const [notification, setNotification] = useState<Notification | null>(null);
+  const [notification, setNotification] = useState(null);
 
-  const setupSSEConnection = (token: string, refreshToken: string) => {
+  const setupSSEConnection = (token, refreshToken) => {
     console.log("Setting up SSE connection...");
 
     const eventSource = new EventSourcePolyfill("https://backend-capstone.site/api/notify/subscribe", {
@@ -29,7 +24,7 @@ const Home: React.FC = () => {
 
     eventSource.addEventListener('message', (event) => {
       try {
-        const data: Notification = JSON.parse(event.data);
+        const data = JSON.parse(event.data);
         console.log('Notification received:', data);
         setNotification(data);
       } catch (error) {
