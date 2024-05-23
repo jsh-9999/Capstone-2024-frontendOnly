@@ -9,28 +9,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
-import { deleteCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
 export default function UserNav({}: Props) {
+  const router = useRouter();
+
   const handleLogout = () => {
-    deleteCookie("token");
-    window.location.pathname = "/";
+    localStorage.removeItem("Authorization");
+    localStorage.removeItem("Refresh");
+    router.push("/");
   };
 
   const handleRegister = () => {
-    deleteCookie("token");
-    window.location.pathname = "/auth/Register";
+    localStorage.removeItem("Authorization");
+    localStorage.removeItem("Refresh");
+    router.push("/auth/Register");
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none select-none">
         <Avatar className="select-none">
-          {/* <AvatarImage src="https://github.com/ebraj.png" alt="@ebraj" /> */}
           <AvatarFallback>EG</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

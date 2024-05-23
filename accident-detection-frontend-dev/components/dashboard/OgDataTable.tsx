@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getCookie } from "cookies-next";
 import {
   ColumnDef,
   useReactTable,
@@ -20,8 +19,8 @@ export type AllDataResponseDto = {
 };
 
 const fetchAccidents = async (): Promise<AllDataResponseDto[]> => {
-  const token = getCookie("Authorization");
-  const refreshToken = getCookie("Refresh");
+  const token = localStorage.getItem("Authorization");
+  const refreshToken = localStorage.getItem("Refresh");
 
   if (!token || !refreshToken) {
     throw new Error("No token found");
@@ -151,44 +150,28 @@ export default function OgDataTable({}) {
       <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-gray-500">
         <table className="lg:table-fixed bg-white border-collapse overflow-hidden w-full">
           <thead>
-            {table.getHeaderGroups().map((headerGroup) => {
-              return (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <th key={header.id} className="border px-4 py-2">
-                        {header.isPlaceholder ? null : (
-                          <>
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                          </>
-                        )}
-                      </th>
-                    );
-                  })}
-                </tr>
-              );
-            })}
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="border px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row) => {
-              return (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td key={cell.id} className="border px-4 py-2">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="border px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
         <div className="pt-3 flex space-x-5 items-center">

@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { setCookie } from 'cookies-next';
 
 type FormData = {
   username: string;
@@ -46,19 +45,10 @@ export default function LoginForm() {
       console.log("RefreshToken:", refreshToken);
 
       if (accessToken && refreshToken) {
-        // 토큰을 쿠키에 저장
-        setCookie("Authorization", accessToken, {
-          maxAge: 60 * 60 * 24,
-          path: '/',
-          secure: true,
-          sameSite: 'none'
-        });
-        setCookie("Refresh", refreshToken, {
-          maxAge: 60 * 60 * 24 * 30,
-          path: '/',
-          secure: true,
-          sameSite: 'none'
-        });
+        // 로컬 스토리지에 토큰 저장
+        localStorage.setItem("Authorization", accessToken);
+        localStorage.setItem("Refresh", refreshToken);
+        
         toast.success("Logged in successfully!");
         router.push("/auth/bbb");
       } else {
