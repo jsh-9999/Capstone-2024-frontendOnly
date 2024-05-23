@@ -26,6 +26,7 @@
     "clsx": "^2.1.0",
     "cookies-next": "^4.1.1",
     "date-fns": "^3.3.1",
+    "eventsource-polyfill": "^0.9.6",
     "fluent-ffmpeg": "^2.1.2",
     "jsmediatags": "^3.9.7",
     "leaflet": "^1.9.4",
