@@ -22,8 +22,13 @@ const Home = () => {
       withCredentials: true
     });
 
+    eventSource.addEventListener('open', () => {
+      console.log('SSE connection opened');
+    });
+
     eventSource.addEventListener('message', (event) => {
       try {
+        console.log('Raw event data:', event.data); // Raw event data 확인
         const data = JSON.parse(event.data);
         console.log('Notification received:', data);
         setNotification(data);
@@ -32,13 +37,18 @@ const Home = () => {
       }
     });
 
-    eventSource.onerror = (error) => {
-      console.error('EventSource failed:', error);
+    eventSource.addEventListener('error', (error) => {
+      if (error.readyState === EventSource.CLOSED) {
+        console.log('SSE connection was closed');
+      } else {
+        console.error('SSE error:', error);
+      }
       eventSource.close(); // 오류 발생 시 연결 종료
-    };
+    });
 
     return () => {
       eventSource.close(); // 컴포넌트 언마운트 시 EventSource 정리
+      console.log('SSE connection closed');
     };
   };
 
