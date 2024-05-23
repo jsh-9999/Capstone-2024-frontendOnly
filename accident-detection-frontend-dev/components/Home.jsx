@@ -19,7 +19,6 @@ const Home = () => {
         'Authorization': token,
         'Refresh': refreshToken
       },
-      withCredentials: true
     });
 
     eventSource.addEventListener('open', () => {
