@@ -25,7 +25,7 @@ const Home = () => {
       console.log('SSE connection opened');
     });
 
-    eventSource.addEventListener('message', (event) => {
+    eventSource.addEventListener('sse', (event) => {
       console.log('Raw event data:', event.data); // Raw event data 확인
       try {
         const data = JSON.parse(event.data);
