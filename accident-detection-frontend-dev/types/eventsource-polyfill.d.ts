@@ -1,3 +1,4 @@
+// eventsource-polyfill.d.ts
 declare module 'eventsource-polyfill' {
     export class EventSourcePolyfill {
       constructor(url: string, eventSourceInitDict?: EventSourceInit);
