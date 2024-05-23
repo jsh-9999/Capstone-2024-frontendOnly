@@ -1,6 +1,6 @@
 // components/Home.tsx
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Hero from "@/components/mainboard/Hero";
 import Features from "@/components/mainboard/Features";
@@ -47,20 +47,23 @@ const Home: React.FC = () => {
     };
   };
 
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem("Authorization");
-    const refreshToken = localStorage.getItem("Refresh");
-    console.log("Token:", token);
-    console.log("Refresh Token:", refreshToken);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem("Authorization");
+      const refreshToken = localStorage.getItem("Refresh");
+      console.log("Token:", token);
+      console.log("Refresh Token:", refreshToken);
 
-    if (!token || !refreshToken) {
-      console.log("No token found, redirecting to login page.");
-      router.push('/auth/login');
-    } else {
-      // SSE 연결 설정하여 알림 수신
-      setupSSEConnection(token, refreshToken);
+      if (!token || !refreshToken) {
+        console.log("No token found, redirecting to login page.");
+        router.push('/auth/login');
+      } else {
+        // SSE 연결 설정하여 알림 수신
+        const cleanup = setupSSEConnection(token, refreshToken);
+        return cleanup;
+      }
     }
-  }
+  }, []);
 
   return (
     <>
