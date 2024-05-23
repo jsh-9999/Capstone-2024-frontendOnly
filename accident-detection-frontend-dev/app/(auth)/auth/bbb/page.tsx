@@ -28,7 +28,7 @@ export default function Home() {
       saveTokenToLocalStorage(token);
       saveRefreshTokenToLocalStorage(refreshToken);
       // SSE 연결 설정하여 알림 수신
-      setupSSEConnection();
+      setupSSEConnection(token, refreshToken);
     }
   }, [router]);
 
@@ -46,9 +46,18 @@ export default function Home() {
     }
   };
 
-  const setupSSEConnection = () => {
+  const setupSSEConnection = (token: string | null, refreshToken: string | null) => {
     console.log("Setting up SSE connection...");
-    const eventSource = new EventSource("https://backend-capstone.site/api/notify/subscribe", { withCredentials: true });
+
+    const eventSourceInitDict = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Refresh': refreshToken
+      },
+      withCredentials: true
+    };
+
+    const eventSource = new EventSource("https://backend-capstone.site/api/notify/subscribe", eventSourceInitDict);
 
     eventSource.addEventListener('sse', (event) => {
       try {
