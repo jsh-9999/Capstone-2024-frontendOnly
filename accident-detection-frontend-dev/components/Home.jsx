@@ -25,12 +25,17 @@ const Home = () => {
       console.log('SSE connection opened');
     });
 
-    eventSource.addEventListener('sse', (event) => {
+    eventSource.addEventListener('message', (event) => {
       console.log('Raw event data:', event.data); // Raw event data 확인
       try {
-        const data = JSON.parse(event.data);
-        console.log('Notification received:', data);
-        setNotification(data);
+        // 데이터가 JSON 형식인지 확인한 후 파싱
+        if (event.data.startsWith('{') && event.data.endsWith('}')) {
+          const data = JSON.parse(event.data);
+          console.log('Notification received:', data);
+          setNotification(data);
+        } else {
+          console.log('Received non-JSON data:', event.data);
+        }
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
