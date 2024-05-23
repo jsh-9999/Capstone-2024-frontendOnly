@@ -35,7 +35,7 @@ export default function Home() {
 
     const eventSource = new EventSourcePolyfill("https://backend-capstone.site/api/notify/subscribe", {
       headers: {
-        'Authorization': token,
+        'Authorization': `Bearer ${token}`,
         'Refresh': refreshToken
       },
       withCredentials: true
