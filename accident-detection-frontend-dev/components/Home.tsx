@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Hero from "@/components/mainboard/Hero";
 import Features from "@/components/mainboard/Features";
 import ModelTest from "@/components/mainboard/ModelTest";
-import EventSource from 'eventsource';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 
 interface Notification {
   message: string;
@@ -19,7 +19,7 @@ const Home: React.FC = () => {
   const setupSSEConnection = (token: string, refreshToken: string) => {
     console.log("Setting up SSE connection...");
 
-    const eventSource = new EventSource("https://backend-capstone.site/api/notify/subscribe", {
+    const eventSource = new EventSourcePolyfill("https://backend-capstone.site/api/notify/subscribe", {
       headers: {
         'Authorization': token,
         'Refresh': refreshToken
