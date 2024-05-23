@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCookie, setCookie } from 'cookies-next';
 import Hero from "@/components/mainboard/Hero";
 import Features from "@/components/mainboard/Features";
 import ModelTest from "@/components/mainboard/ModelTest";
@@ -16,8 +15,8 @@ export default function Home() {
   const [notification, setNotification] = useState<Notification | null>(null);
 
   useEffect(() => {
-    const token = getCookie("Authorization");
-    const refreshToken = getCookie("Refresh");
+    const token = localStorage.getItem("Authorization");
+    const refreshToken = localStorage.getItem("Refresh");
     console.log("Token:", token);
     console.log("Refresh Token:", refreshToken);
 
@@ -25,36 +24,26 @@ export default function Home() {
       console.log("No token found, redirecting to login page.");
       router.push('/auth/login');
     } else {
-      // 쿠키에 토큰 저장
-      saveTokenToCookie(token as string);
-      saveRefreshTokenToCookie(refreshToken as string);
+      // 로컬 스토리지에 토큰 저장
+      saveTokenToLocalStorage(token);
+      saveRefreshTokenToLocalStorage(refreshToken);
       // SSE 연결 설정하여 알림 수신
       setupSSEConnection();
     }
   }, [router]);
 
-  const saveTokenToCookie = (token: string) => {
-    const expires = new Date();
-    expires.setDate(expires.getDate() + 7); // 7일 후 만료
-    console.log("Saving token to cookie with expiry date:", expires);
-    setCookie("Authorization", token, {
-      expires,
-      path: '/',
-      secure: true,
-      sameSite: 'none'
-    });
+  const saveTokenToLocalStorage = (token: string | null) => {
+    if (token) {
+      console.log("Saving token to local storage");
+      localStorage.setItem("Authorization", token);
+    }
   };
 
-  const saveRefreshTokenToCookie = (refreshToken: string) => {
-    const expires = new Date();
-    expires.setDate(expires.getDate() + 14); // 14일 후 만료
-    console.log("Saving refresh token to cookie with expiry date:", expires);
-    setCookie("Refresh", refreshToken, {
-      expires,
-      path: '/',
-      secure: true,
-      sameSite: 'none'
-    });
+  const saveRefreshTokenToLocalStorage = (refreshToken: string | null) => {
+    if (refreshToken) {
+      console.log("Saving refresh token to local storage");
+      localStorage.setItem("Refresh", refreshToken);
+    }
   };
 
   const setupSSEConnection = () => {
