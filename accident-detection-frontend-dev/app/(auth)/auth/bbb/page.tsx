@@ -24,40 +24,17 @@ export default function Home() {
       console.log("No token found, redirecting to login page.");
       router.push('/auth/login');
     } else {
-      // 로컬 스토리지에 토큰 저장
-      saveTokenToLocalStorage(token);
-      saveRefreshTokenToLocalStorage(refreshToken);
       // SSE 연결 설정하여 알림 수신
       setupSSEConnection(token, refreshToken);
     }
   }, [router]);
 
-  const saveTokenToLocalStorage = (token: string | null) => {
-    if (token) {
-      console.log("Saving token to local storage");
-      localStorage.setItem("Authorization", token);
-    }
-  };
-
-  const saveRefreshTokenToLocalStorage = (refreshToken: string | null) => {
-    if (refreshToken) {
-      console.log("Saving refresh token to local storage");
-      localStorage.setItem("Refresh", refreshToken);
-    }
-  };
-
-  const setupSSEConnection = (token: string | null, refreshToken: string | null) => {
+  const setupSSEConnection = (token: string, refreshToken: string) => {
     console.log("Setting up SSE connection...");
 
-    const eventSourceInitDict = {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Refresh': refreshToken
-      },
-      withCredentials: true
-    };
-
-    const eventSource = new EventSource("https://backend-capstone.site/api/notify/subscribe", eventSourceInitDict);
+    // 토큰을 URL 파라미터로 전달
+    const eventSourceUrl = `https://backend-capstone.site/api/notify/subscribe?auth=${token}&refresh=${refreshToken}`;
+    const eventSource = new EventSource(eventSourceUrl, { withCredentials: true });
 
     eventSource.addEventListener('sse', (event) => {
       try {
