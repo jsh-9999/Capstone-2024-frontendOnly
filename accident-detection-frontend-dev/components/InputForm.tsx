@@ -18,26 +18,14 @@ const InputForm = () => {
 
   const videoUrl = watch("videoUrl");
 
-  const getTokens = () => {
-    const token = localStorage.getItem("Authorization");
-    const refreshToken = localStorage.getItem("Refresh");
-    return { token, refreshToken };
-  };
-
   const onSubmitVideoUrl = async (data: any) => {
     if (!data.videoUrl) return;
 
     setVideo(data.videoUrl);
 
-    const { token, refreshToken } = getTokens();
-
     const response = await fetch("http://127.0.0.1:5000/api/v1/public/upload-link", {
       method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': token || '',
-        'Refresh': refreshToken || ''
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ video_link: data.videoUrl })
     });
 
@@ -59,18 +47,11 @@ const InputForm = () => {
     if (file) {
       const localVideoUrl = URL.createObjectURL(file);
       setVideo(localVideoUrl);
-
       const formData = new FormData();
       formData.append("file", file);
-
-      const { token, refreshToken } = getTokens();
-
+      
       const uploadResponse = await fetch("http://127.0.0.1:5000/api/v1/public/upload-video", {
         method: "POST",
-        headers: {
-          'Authorization': token || '',
-          'Refresh': refreshToken || ''
-        },
         body: formData,
       });
 
