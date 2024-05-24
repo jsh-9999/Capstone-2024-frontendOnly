@@ -1,9 +1,13 @@
 import { useEffect } from "react";
 
-const GoogleMap = ({ onMapClick }) => {
+type GoogleMapProps = {
+  onMapClick: (event: google.maps.MapMouseEvent) => void;
+};
+
+const GoogleMap = ({ onMapClick }: GoogleMapProps) => {
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCQiNT9d6MQ7nAYDTyX899gAFGNQ2Ufnrw`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCQiNT9d6MQ7nAYDTyX899gAFGNQ2Ufnrw&callback=initMap`;
     script.async = true;
     script.defer = true;
     window.initMap = () => {
