@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
@@ -15,7 +16,42 @@ import { getCookie } from 'cookies-next';
 
 ChartJS.register(
   CategoryScale,
-	@@ -55,16 +54,16 @@ type Props = {};
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+export const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: "top" as const,
+    },
+    title: {
+      display: true,
+      text: `Accident Graph for ${new Date().getFullYear()}`,
+    },
+  },
+};
+
+const monthLabels = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+type Props = {};
 
 export function SimpleChart({}: Props) {
   const fetchMonthlyAccidentData = async (): Promise<Record<string, number>> => {
@@ -33,18 +69,22 @@ export function SimpleChart({}: Props) {
       },
       credentials: 'include',
     });
+
     if (!response.ok) {
       console.error(`Failed to fetch data: ${response.status} ${response.statusText}`);
       throw new Error("Failed to fetch monthly accident data");
     }
+
     const data = await response.json();
     console.log("Fetched data: ", data);
     return data as Record<string, number>;
   };
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["monthlyAccidentData"],
     queryFn: fetchMonthlyAccidentData,
   });
+
   const [chartData, setChartData] = useState({
     labels: monthLabels,
     datasets: [
@@ -55,6 +95,7 @@ export function SimpleChart({}: Props) {
       },
     ],
   });
+
   useEffect(() => {
     if (data) {
       const accidentData = monthLabels.map((month, index) => {
@@ -72,8 +113,10 @@ export function SimpleChart({}: Props) {
       }));
     }
   }, [data]);
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading data: {(error as Error).message}</div>;
+
   return (
     <div>
       <Bar data={chartData} options={options} />
