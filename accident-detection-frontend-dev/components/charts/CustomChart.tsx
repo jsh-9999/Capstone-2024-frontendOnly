@@ -14,7 +14,6 @@ import {
   Cross,
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
-import { getCookie } from 'cookies-next';
 
 interface DataItem {
   region: string;
@@ -23,8 +22,8 @@ interface DataItem {
 
 // Fetch function to get region-wise accident data
 const fetchRegionAccidentData = async (): Promise<Record<string, number>> => {
-  const token = getCookie("Authorization");
-  const refreshToken = getCookie("Refresh");
+  const token = localStorage.getItem("Authorization");
+  const refreshToken = localStorage.getItem("Refresh");
 
   if (!token || !refreshToken) {
     throw new Error("No token found");
@@ -32,7 +31,7 @@ const fetchRegionAccidentData = async (): Promise<Record<string, number>> => {
 
   const response = await fetch("https://backend-capstone.site/api/hospital/accident/statistics/region", {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: token,
       Refresh: `${refreshToken}`,
     },
     credentials: 'include',
