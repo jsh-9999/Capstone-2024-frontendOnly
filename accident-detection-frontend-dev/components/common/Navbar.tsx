@@ -1,15 +1,21 @@
-import { getCookie } from "cookies-next";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import UserNav from "../auth/UserNav";
 import MaxWidthContainer from "../layouts/MaxWidthContainer";
 import { Button } from "../ui/button";
-import { cookies } from "next/headers";
 
 type Props = {};
 
-export default async function Navbar({}: Props) {
-  const cookieStore = cookies();
-  const token = cookieStore.get("token")?.value;
+export default function Navbar({}: Props) {
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("Authorization");
+    setToken(storedToken);
+  }, []);
+
   return (
     <main className="bg-gray-900 py-4 border-b-2 border-gray-800">
       <MaxWidthContainer>
@@ -25,7 +31,7 @@ export default async function Navbar({}: Props) {
                   <Link href={"/auth/login"}>Login</Link>
                 </Button>
                 <Button size={"lg"} asChild>
-                  <Link href={"/auth/Register"}>Sign Up</Link>
+                  <Link href={"/auth/register"}>Sign Up</Link>
                 </Button>
               </>
             ) : (
