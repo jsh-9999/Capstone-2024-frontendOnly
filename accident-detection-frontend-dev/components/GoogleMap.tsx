@@ -4,6 +4,13 @@ type GoogleMapProps = {
   onMapClick: (event: google.maps.MapMouseEvent) => void;
 };
 
+// 전역 window 객체에 initMap을 추가합니다.
+declare global {
+  interface Window {
+    initMap: () => void;
+  }
+}
+
 const GoogleMap = ({ onMapClick }: GoogleMapProps) => {
   useEffect(() => {
     const script = document.createElement("script");
@@ -11,7 +18,7 @@ const GoogleMap = ({ onMapClick }: GoogleMapProps) => {
     script.async = true;
     script.defer = true;
     window.initMap = () => {
-      const map = new google.maps.Map(document.getElementById("map"), {
+      const map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
         center: { lat: 33.450701, lng: 126.570667 },
         zoom: 8,
       });
