@@ -48,13 +48,12 @@
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getCookie } from "cookies-next";
 
 export function middleware(request: NextRequest) {
-  const token = getCookie("Authorization", { req: request });
+  const token = request.headers.get("Authorization");
 
   const path = request.nextUrl.pathname;
-  console.log("cookie", token);
+  console.log("Authorization header", token);
 
   // if (path.startsWith("/auth") && token) {
   //   return NextResponse.redirect(new URL("/dashboard", request.url));
