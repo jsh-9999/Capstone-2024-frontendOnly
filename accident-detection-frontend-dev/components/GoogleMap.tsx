@@ -4,7 +4,7 @@ type GoogleMapProps = {
   onMapClick: (event: google.maps.MapMouseEvent) => void;
 };
 
-// 전역 window 객체에 initMap을 추가합니다.
+// Declare global initMap function
 declare global {
   interface Window {
     initMap: () => void;
