@@ -2,7 +2,6 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { EventSourcePolyfill } from 'event-source-polyfill';
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
