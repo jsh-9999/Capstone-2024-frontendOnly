@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-
+import GoogleMap from './GoogleMap';
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 type FormProps = {
@@ -14,7 +14,8 @@ const InputForm = () => {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [video, setVideo] = useState<string | null>(null);
-  const { register, handleSubmit, watch, setValue } = useForm<FormProps>();
+  const [showMap, setShowMap] = useState<boolean>(false);
+  const { register, handleSubmit, watch } = useForm<FormProps>();
 
   const videoUrl = watch("videoUrl");
 
@@ -65,10 +66,16 @@ const InputForm = () => {
     }
   };
 
-  // Handler for sending location
   const onSendLocation = () => {
-    // Logic to send location goes here
-    console.log("Location sending logic here");
+    setShowMap(true);
+  };
+
+  const onMapClick = (event: google.maps.MapMouseEvent) => {
+    if (event.latLng) {
+      const lat = event.latLng.lat();
+      const lng = event.latLng.lng();
+      alert(`클릭한 위치의 위도는 ${lat}이고, 경도는 ${lng}입니다.`);
+    }
   };
 
   return (
@@ -99,7 +106,7 @@ const InputForm = () => {
                   Submit Video URL
                 </button>
                 <button
-                  type="button" // This should be `type="button"` to prevent form submission
+                  type="button"
                   className="font-bold py-2 px-4 bg-green-500 rounded-md text-white"
                   onClick={onSendLocation}
                 >
@@ -136,13 +143,16 @@ const InputForm = () => {
               </button>
             </div>
           </form>
-          {video && (
-            <div id="videoModal" className="video-modal">
-              <ReactPlayer url={video} playing width="100%" height="100%" />
-              <button onClick={() => setVideo(null)}>Close</button>
-            </div>
-          )}
         </>
+      )}
+      {showMap && (
+        <div id="map" style={{ width: '100%', height: '350px' }}></div>
+      )}
+      {video && (
+        <div id="videoModal" className="video-modal">
+          <ReactPlayer url={video} playing width="100%" height="100%" />
+          <button onClick={() => setVideo(null)}>Close</button>
+        </div>
       )}
     </main>
   );
