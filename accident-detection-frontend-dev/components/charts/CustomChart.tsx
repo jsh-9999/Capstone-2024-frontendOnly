@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import {
   LineChart,
@@ -14,16 +13,16 @@ import {
   Cross,
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
+import { getCookie } from 'cookies-next';
 
 interface DataItem {
   region: string;
-  count: number;
-}
+	@@ -23,16 +22,16 @@ interface DataItem {
 
 // Fetch function to get region-wise accident data
 const fetchRegionAccidentData = async (): Promise<Record<string, number>> => {
-  const token = localStorage.getItem("Authorization");
-  const refreshToken = localStorage.getItem("Refresh");
+  const token = getCookie("Authorization");
+  const refreshToken = getCookie("Refresh");
 
   if (!token || !refreshToken) {
     throw new Error("No token found");
@@ -31,29 +30,24 @@ const fetchRegionAccidentData = async (): Promise<Record<string, number>> => {
 
   const response = await fetch("https://backend-capstone.site/api/hospital/accident/statistics/region", {
     headers: {
-      Authorization: token,
+      Authorization: `Bearer ${token}`,
       Refresh: `${refreshToken}`,
     },
     credentials: 'include',
   });
-
   if (!response.ok) {
     throw new Error("Failed to fetch region-wise accident data");
   }
-
   const data = await response.json();
   console.log("Fetched data: ", data);
   return data;
 };
-
 const CustomChart: React.FC = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["regionAccidentData"],
     queryFn: fetchRegionAccidentData,
   });
-
   const [chartData, setChartData] = useState<DataItem[]>([]);
-
   useEffect(() => {
     if (data) {
       const transformedData = Object.entries(data).map(([region, count]) => ({
@@ -63,10 +57,8 @@ const CustomChart: React.FC = () => {
       setChartData(transformedData);
     }
   }, [data]);
-
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading data: {(error as Error).message}</div>;
-
   return (
     <ResponsiveContainer width="100%" height={500}>
       <LineChart
@@ -91,7 +83,6 @@ const CustomChart: React.FC = () => {
     </ResponsiveContainer>
   );
 };
-
 interface CustomizedCrossProps {
   width?: number;
   height?: number;
@@ -99,12 +90,10 @@ interface CustomizedCrossProps {
   fill?: string;
   formattedGraphicalItems?: any[];
 }
-
 const CustomizedCross: React.FC<CustomizedCrossProps> = (props) => {
   const { width, height, stroke, fill, formattedGraphicalItems } = props;
   const firstSeries = formattedGraphicalItems?.[0];
   const secondPoint = firstSeries?.props?.points[1];
-
   return (
     <Cross
       y={secondPoint?.y}
@@ -118,5 +107,4 @@ const CustomizedCross: React.FC<CustomizedCrossProps> = (props) => {
     />
   );
 };
-
 export default CustomChart;
