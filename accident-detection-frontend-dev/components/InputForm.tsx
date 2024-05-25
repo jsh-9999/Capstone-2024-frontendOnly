@@ -1,10 +1,10 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import GoogleMap from "./GoogleMap";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
+const GoogleMap = dynamic(() => import("./GoogleMap"), { ssr: false }); // GoogleMap 컴포넌트를 동적으로 로드
 
 type FormProps = {
   image: FileList;
@@ -16,7 +16,6 @@ const InputForm = () => {
   const [fileName, setFileName] = useState<string | null>(null);
   const [video, setVideo] = useState<string | null>(null);
   const [showMap, setShowMap] = useState<boolean>(false);
-  const mapRef = useRef<HTMLDivElement>(null);
   const { register, handleSubmit, watch } = useForm<FormProps>();
 
   const videoUrl = watch("videoUrl");
@@ -72,23 +71,13 @@ const InputForm = () => {
     setShowMap(true);
   };
 
-  useEffect(() => {
-    if (showMap && mapRef.current) {
-      const google = window.google;
-      const map = new google.maps.Map(mapRef.current, {
-        center: { lat: -34.397, lng: 150.644 },
-        zoom: 8,
-      });
-
-      map.addListener("click", (event: google.maps.MapMouseEvent) => {
-        if (event.latLng) {
-          const lat = event.latLng.lat();
-          const lng = event.latLng.lng();
-          alert(`클릭한 위치의 위도는 ${lat}이고, 경도는 ${lng}입니다.`);
-        }
-      });
+  const handleMapClick = (event: google.maps.MapMouseEvent) => {
+    if (event.latLng) {
+      const lat = event.latLng.lat();
+      const lng = event.latLng.lng();
+      alert(`클릭한 위치의 위도는 ${lat}이고, 경도는 ${lng}입니다.`);
     }
-  }, [showMap]);
+  };
 
   return (
     <main className="max-w-[900px] min-h-[400px] mx-auto">
@@ -152,7 +141,9 @@ const InputForm = () => {
         </form>
       </div>
       {showMap && (
-        <div ref={mapRef} style={{ width: '100%', height: '350px', marginTop: '20px' }}></div>
+        <div style={{ width: '100%', height: '350px', marginTop: '20px' }}>
+          <GoogleMap onMapClick={handleMapClick} />
+        </div>
       )}
       {video && (
         <div className="w-full min-h-[200px] md:min-h-[400px] border-4 rounded-md border-dashed p-1 mt-4">
