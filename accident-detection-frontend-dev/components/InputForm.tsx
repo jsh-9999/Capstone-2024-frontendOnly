@@ -82,18 +82,6 @@ const InputForm = () => {
   return (
     <main className="max-w-[900px] min-h-[400px] mx-auto">
       <div className="flex flex-col space-y-4">
-        {video && (
-          <div className="relative w-full min-h-[200px] md:min-h-[400px] border-4 rounded-md border-dashed p-1 mt-4">
-            <ReactPlayer 
-              url={video} 
-              playing 
-              controls 
-              width="100%" 
-              height="100%" 
-              className="absolute top-0 left-0"
-            />
-          </div>
-        )}
         <form onSubmit={handleSubmit(onSubmitVideoUrl)} className="space-y-4">
           <div>
             <label htmlFor="videoUrl" className="block text-sm font-medium text-gray-700">
@@ -126,7 +114,23 @@ const InputForm = () => {
         <form onSubmit={handleSubmit(onSubmitVideoFile)} className="space-y-4">
           <div>
             <label htmlFor="image" className="uppercase min-h-[200px] md:min-h-[400px] py-10 border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
-              {fileName ? `Selected file: ${fileName}` : "Click to upload video file"}
+              {fileName ? (
+                <div className="relative w-full h-full">
+                  {video && (
+                    <ReactPlayer 
+                      url={video} 
+                      playing 
+                      controls 
+                      width="100%" 
+                      height="100%" 
+                      className="absolute top-0 left-0"
+                    />
+                  )}
+                  Selected file: {fileName}
+                </div>
+              ) : (
+                "Click to upload video file"
+              )}
             </label>
             <input
               type="file"
