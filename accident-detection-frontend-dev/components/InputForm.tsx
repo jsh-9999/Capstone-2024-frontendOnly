@@ -2,6 +2,7 @@
 import dynamic from "next/dynamic";
 import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
+import GoogleMap from "./GoogleMap";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
