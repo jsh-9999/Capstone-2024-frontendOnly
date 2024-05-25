@@ -112,7 +112,7 @@ const InputForm = () => {
           </div>
         </form>
         <form onSubmit={handleSubmit(onSubmitVideoFile)} className="space-y-4">
-          <div className="relative min-h-[200px] md:min-h-[400px] border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
+          <div className="relative min-h-[400px] md:min-h-[600px] border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
             {fileName ? (
               <div className="relative w-full h-full">
                 {video && (
