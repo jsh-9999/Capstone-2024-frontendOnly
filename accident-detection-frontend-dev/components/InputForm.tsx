@@ -117,16 +117,17 @@ const InputForm = () => {
               {fileName ? (
                 <div className="relative w-full h-full">
                   {video && (
-                    <ReactPlayer 
-                      url={video} 
-                      playing 
-                      controls 
-                      width="100%" 
-                      height="100%" 
-                      className="absolute top-0 left-0"
-                    />
+                    <div className="absolute top-0 left-0 w-full h-full">
+                      <ReactPlayer 
+                        url={video} 
+                        playing 
+                        controls 
+                        width="100%" 
+                        height="100%" 
+                      />
+                    </div>
                   )}
-                  Selected file: {fileName}
+                  <span className="block mt-2 text-center">{`Selected file: ${fileName}`}</span>
                 </div>
               ) : (
                 "Click to upload video file"
