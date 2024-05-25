@@ -16,7 +16,7 @@ const GoogleMap = ({ onMapClick }: GoogleMapProps) => {
     const handleScriptLoad = () => {
       if (window.google) {
         const map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
-          center: { lat: 33.450701, lng: 126.570667 },
+          center: { lat: 36.5040736, lng: 127.2494855 },
           zoom: 8,
         });
 
