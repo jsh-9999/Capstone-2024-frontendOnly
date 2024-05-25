@@ -146,8 +146,15 @@ const InputForm = () => {
         </div>
       )}
       {video && (
-        <div className="w-full min-h-[200px] md:min-h-[400px] border-4 rounded-md border-dashed p-1 mt-4">
-          <ReactPlayer url={video} playing width="100%" height="100%" />
+        <div className="relative w-full min-h-[200px] md:min-h-[400px] border-4 rounded-md border-dashed p-1 mt-4">
+          <ReactPlayer 
+            url={video} 
+            playing 
+            controls 
+            width="100%" 
+            height="100%" 
+            className="absolute top-0 left-0"
+          />
         </div>
       )}
     </main>
