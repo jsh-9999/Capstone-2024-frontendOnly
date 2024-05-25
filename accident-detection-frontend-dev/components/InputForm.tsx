@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
-const GoogleMap = dynamic(() => import("./GoogleMap"), { ssr: false }); // GoogleMap 컴포넌트를 동적으로 로드
 
 type FormProps = {
   image: FileList;
@@ -15,8 +14,7 @@ const InputForm = () => {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [video, setVideo] = useState<string | null>(null);
-  const [showMap, setShowMap] = useState<boolean>(false);
-  const { register, handleSubmit, watch } = useForm<FormProps>();
+  const { register, handleSubmit, watch, setValue } = useForm<FormProps>();
 
   const videoUrl = watch("videoUrl");
 
@@ -67,99 +65,84 @@ const InputForm = () => {
     }
   };
 
+  // Handler for sending location
   const onSendLocation = () => {
-    setShowMap(true);
-  };
-
-  const handleMapClick = (event: google.maps.MapMouseEvent) => {
-    if (event.latLng) {
-      const lat = event.latLng.lat();
-      const lng = event.latLng.lng();
-      alert(`클릭한 위치의 위도는 ${lat}이고, 경도는 ${lng}입니다.`);
-    }
+    // Logic to send location goes here
+    console.log("Location sending logic here");
   };
 
   return (
     <main className="max-w-[900px] min-h-[400px] mx-auto">
-      <div className="flex flex-col space-y-4">
-        <form onSubmit={handleSubmit(onSubmitVideoUrl)} className="space-y-4">
-          <div>
-            <label htmlFor="videoUrl" className="block text-sm font-medium text-gray-700">
-              Real Time RTSP CCTV
-            </label>
-            <input
-              type="text"
-              {...register("videoUrl")}
-              id="videoUrl"
-              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-              placeholder="Enter video URL"
-            />
-            <div className="flex justify-between mt-2">
+      {video ? (
+        <div className="w-full min-h-[200px] md:min-h-[400px] border-4 rounded-md border-dashed p-1">
+          <ReactPlayer url={video} playing width="100%" height="100%" />
+        </div>
+      ) : (
+        <>
+          <form onSubmit={handleSubmit(onSubmitVideoUrl)} className="space-y-4">
+            <div>
+              <label htmlFor="videoUrl" className="block text-sm font-medium text-gray-700">
+                Real Time RTSP CCTV
+              </label>
+              <input
+                type="text"
+                {...register("videoUrl")}
+                id="videoUrl"
+                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                placeholder="Enter video URL"
+              />
+              <div className="flex justify-between">
+                <button
+                  type="submit"
+                  className="font-bold py-2 px-4 bg-blue-500 rounded-md text-white"
+                >
+                  Submit Video URL
+                </button>
+                <button
+                  type="button" // This should be `type="button"` to prevent form submission
+                  className="font-bold py-2 px-4 bg-green-500 rounded-md text-white"
+                  onClick={onSendLocation}
+                >
+                  Send Location
+                </button>
+              </div>
+            </div>
+          </form>
+          <form onSubmit={handleSubmit(onSubmitVideoFile)}>
+            <div>
+              <label htmlFor="image" className="uppercase min-h-[200px] md:min-h-[400px] py-10 border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
+                {fileName ? `Selected file: ${fileName}` : "Click to upload video file"}
+              </label>
+              <input
+                type="file"
+                {...register("image")}
+                id="image"
+                className="hidden"
+                accept="video/*"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length > 0) {
+                    const selectedFile = files[0];
+                    setFile(selectedFile);
+                    setFileName(selectedFile.name);
+                  }
+                }}
+              />
               <button
                 type="submit"
-                className="font-bold py-2 px-4 bg-blue-500 rounded-md text-white"
+                className="font-bold py-4 px-8 bg-gray-900 rounded-md text-white w-full"
               >
-                Submit Video URL
-              </button>
-              <button
-                type="button"
-                className="font-bold py-2 px-4 bg-green-500 rounded-md text-white"
-                onClick={onSendLocation}
-              >
-                Send Location
+                Submit this Video
               </button>
             </div>
-          </div>
-        </form>
-        <form onSubmit={handleSubmit(onSubmitVideoFile)} className="space-y-4">
-          <div className="relative min-h-[200px] md:min-h-[400px] border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
-            {fileName ? (
-              <div className="relative w-full h-full">
-                {video && (
-                  <ReactPlayer 
-                    url={video} 
-                    playing 
-                    controls 
-                    width="100%" 
-                    height="100%" 
-                    className="absolute top-0 left-0"
-                  />
-                )}
-                <span className="block text-center mt-2">{`Selected file: ${fileName}`}</span>
-              </div>
-            ) : (
-              <label htmlFor="image" className="uppercase w-full h-full flex items-center justify-center cursor-pointer">
-                Click to upload video file
-              </label>
-            )}
-            <input
-              type="file"
-              {...register("image")}
-              id="image"
-              className="hidden"
-              accept="video/*"
-              onChange={(e) => {
-                const files = e.target.files;
-                if (files && files.length > 0) {
-                  const selectedFile = files[0];
-                  setFile(selectedFile);
-                  setFileName(selectedFile.name);
-                }
-              }}
-            />
-          </div>
-          <button
-            type="submit"
-            className="font-bold py-4 px-8 bg-gray-900 rounded-md text-white w-full"
-          >
-            Submit this Video
-          </button>
-        </form>
-      </div>
-      {showMap && (
-        <div style={{ width: '100%', height: '350px', marginTop: '20px' }}>
-          <GoogleMap onMapClick={handleMapClick} />
-        </div>
+          </form>
+          {video && (
+            <div id="videoModal" className="video-modal">
+              <ReactPlayer url={video} playing width="100%" height="100%" />
+              <button onClick={() => setVideo(null)}>Close</button>
+            </div>
+          )}
+        </>
       )}
     </main>
   );
