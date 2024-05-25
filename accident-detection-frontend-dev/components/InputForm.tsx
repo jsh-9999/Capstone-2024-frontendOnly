@@ -39,9 +39,11 @@ const InputForm = () => {
 
   const onSubmitVideoFile = async () => {
     if (file) {
+      const localVideoUrl = URL.createObjectURL(file);
+      setVideo(localVideoUrl);
       const formData = new FormData();
       formData.append("file", file);
-
+      
       const uploadResponse = await fetch("http://127.0.0.1:5000/api/v1/public/upload-video", {
         method: "POST",
         body: formData,
@@ -68,6 +70,17 @@ const InputForm = () => {
   return (
     <main className="max-w-[900px] min-h-[400px] mx-auto">
       <div className="flex flex-col space-y-4">
+        {video && (
+          <div className="relative w-full min-h-[200px] md:min-h-[400px] border-4 rounded-md border-dashed bg-slate-100 flex items-center justify-center">
+            <ReactPlayer 
+              url={video} 
+              playing 
+              controls 
+              width="100%" 
+              height="100%" 
+            />
+          </div>
+        )}
         <form onSubmit={handleSubmit(onSubmitVideoUrl)} className="space-y-4">
           <div>
             <label htmlFor="videoUrl" className="block text-sm font-medium text-gray-700">
@@ -98,20 +111,10 @@ const InputForm = () => {
           </div>
         </form>
         <form onSubmit={handleSubmit(onSubmitVideoFile)} className="space-y-4">
-          <div className="relative uppercase min-h-[200px] md:min-h-[400px] py-10 border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
-            {file ? (
-              <div className="absolute inset-0">
-                <ReactPlayer
-                  url={URL.createObjectURL(file)}
-                  playing
-                  controls
-                  width="100%"
-                  height="100%"
-                />
-              </div>
-            ) : (
-              fileName ? `Selected file: ${fileName}` : "Click to upload video file"
-            )}
+          <div>
+            <label htmlFor="image" className="uppercase min-h-[200px] md:min-h-[400px] py-10 border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
+              {fileName ? `Selected file: ${fileName}` : "Click to upload video file"}
+            </label>
             <input
               type="file"
               {...register("image")}
@@ -128,13 +131,13 @@ const InputForm = () => {
                 }
               }}
             />
+            <button
+              type="submit"
+              className="font-bold py-4 px-8 bg-gray-900 rounded-md text-white w-full"
+            >
+              Submit this Video
+            </button>
           </div>
-          <button
-            type="submit"
-            className="font-bold py-4 px-8 bg-gray-900 rounded-md text-white w-full mt-4"
-          >
-            Submit this Video
-          </button>
         </form>
       </div>
       {showMap && (
