@@ -112,27 +112,26 @@ const InputForm = () => {
           </div>
         </form>
         <form onSubmit={handleSubmit(onSubmitVideoFile)} className="space-y-4">
-          <div>
-            <label htmlFor="image" className="uppercase min-h-[200px] md:min-h-[400px] py-10 border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
-              {fileName ? (
-                <div className="relative w-full h-full">
-                  {video && (
-                    <div className="absolute top-0 left-0 w-full h-full">
-                      <ReactPlayer 
-                        url={video} 
-                        playing 
-                        controls 
-                        width="100%" 
-                        height="100%" 
-                      />
-                    </div>
-                  )}
-                  <span className="block mt-2 text-center">{`Selected file: ${fileName}`}</span>
-                </div>
-              ) : (
-                "Click to upload video file"
-              )}
-            </label>
+          <div className="relative min-h-[200px] md:min-h-[400px] border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
+            {fileName ? (
+              <div className="relative w-full h-full">
+                {video && (
+                  <ReactPlayer 
+                    url={video} 
+                    playing 
+                    controls 
+                    width="100%" 
+                    height="100%" 
+                    className="absolute top-0 left-0"
+                  />
+                )}
+                <span className="block text-center mt-2">{`Selected file: ${fileName}`}</span>
+              </div>
+            ) : (
+              <label htmlFor="image" className="uppercase w-full h-full flex items-center justify-center cursor-pointer">
+                Click to upload video file
+              </label>
+            )}
             <input
               type="file"
               {...register("image")}
@@ -148,13 +147,13 @@ const InputForm = () => {
                 }
               }}
             />
-            <button
-              type="submit"
-              className="font-bold py-4 px-8 bg-gray-900 rounded-md text-white w-full"
-            >
-              Submit this Video
-            </button>
           </div>
+          <button
+            type="submit"
+            className="font-bold py-4 px-8 bg-gray-900 rounded-md text-white w-full"
+          >
+            Submit this Video
+          </button>
         </form>
       </div>
       {showMap && (
