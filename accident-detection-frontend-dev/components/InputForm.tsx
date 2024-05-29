@@ -57,7 +57,7 @@ const InputForm = () => {
     }
   };
 
-  const onSubmitVideoFile = async () => {
+  const onSubmitVideoFile = async (data: FormProps) => {
     try {
       if (file) {
         toast("Uploading video file...");
