@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
@@ -71,7 +71,7 @@ const InputForm = () => {
         const uploadResponse = await fetch("http://capstone-aiserver.shop/api/v1/public/upload-video", {
           method: "POST",
           headers: {
-            'Authorization': authToken ? `Bearer ${authToken}` : '',
+            'Authorization': authToken ? `Bearer ${authToken}` : '', // Replace with your actual authorization token
           },
           body: formData,
         });
