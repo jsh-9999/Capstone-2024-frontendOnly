@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
-import { Button } from "../ui/button";
+import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
