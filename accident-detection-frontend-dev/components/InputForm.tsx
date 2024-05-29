@@ -9,7 +9,6 @@ const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 const GoogleMap = dynamic(() => import("./GoogleMap"), { ssr: false });
 
 type FormProps = {
-  image: FileList;
   videoUrl: string;
 };
 
@@ -27,17 +26,17 @@ const InputForm = () => {
       toast.error("Please select a location on the map.");
       return;
     }
-    
+
     try {
       if (!data.videoUrl) return;
       toast("Uploading video URL...");
 
       const response = await fetch("http://capstone-aiserver.shop/api/v1/public/upload-link", {
         method: "POST",
-        headers: { 
+        headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           video_link: data.videoUrl,
           location: location
         })
@@ -72,7 +71,7 @@ const InputForm = () => {
       toast.error("Please select a location on the map.");
       return;
     }
-    
+
     try {
       if (file) {
         toast("Uploading video file...");
@@ -169,7 +168,6 @@ const InputForm = () => {
             </label>
             <input
               type="file"
-              {...register("image", { required: "Video file is required" })}
               id="image"
               className="hidden"
               accept="video/*"
@@ -183,13 +181,11 @@ const InputForm = () => {
                 }
               }}
             />
-            <span className="inline-block text-sm text-red-500">
-              {errors.image && errors.image.message}
-            </span>
             <Button type="submit" className="font-bold py-4 px-8 bg-gray-900 rounded-md text-white w-full">
               Submit this Video
             </Button>
           </div>
+          {errors.image && <span className="inline-block text-sm text-red-500">{errors.image.message}</span>}
         </form>
       </div>
       {showMap && (
