@@ -8,8 +8,12 @@ import toast from "react-hot-toast";
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 const GoogleMap = dynamic(() => import("./GoogleMap"), { ssr: false });
 
-type FormProps = {
+type UrlFormProps = {
   videoUrl: string;
+};
+
+type FileFormProps = {
+  image: FileList;
 };
 
 const InputForm = () => {
@@ -18,25 +22,28 @@ const InputForm = () => {
   const [video, setVideo] = useState<string | null>(null);
   const [showMap, setShowMap] = useState<boolean>(false);
   const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<FormProps>();
-  const videoUrl = watch("videoUrl");
+  
+  const { register: registerUrl, handleSubmit: handleSubmitUrl, formState: { errors: urlErrors }, watch: watchUrl } = useForm<UrlFormProps>();
+  const videoUrl = watchUrl("videoUrl");
+  
+  const { register: registerFile, handleSubmit: handleSubmitFile, formState: { errors: fileErrors } } = useForm<FileFormProps>();
 
-  const onSubmitVideoUrl = async (data: any) => {
+  const onSubmitVideoUrl = async (data: UrlFormProps) => {
     if (!location) {
       toast.error("Please select a location on the map.");
       return;
     }
-
+    
     try {
       if (!data.videoUrl) return;
       toast("Uploading video URL...");
 
       const response = await fetch("http://capstone-aiserver.shop/api/v1/public/upload-link", {
         method: "POST",
-        headers: {
+        headers: { 
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
+        body: JSON.stringify({ 
           video_link: data.videoUrl,
           location: location
         })
@@ -65,13 +72,12 @@ const InputForm = () => {
     }
   };
 
-  const onSubmitVideoFile = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmitVideoFile = async (data: FileFormProps) => {
     if (!location) {
       toast.error("Please select a location on the map.");
       return;
     }
-
+    
     try {
       if (file) {
         toast("Uploading video file...");
@@ -136,20 +142,21 @@ const InputForm = () => {
             />
           </div>
         )}
-        <form onSubmit={handleSubmit(onSubmitVideoUrl)} className="space-y-4">
+
+        <form onSubmit={handleSubmitUrl(onSubmitVideoUrl)} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="videoUrl" className="block text-sm font-medium text-gray-700">
               Real Time RTSP CCTV <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              {...register("videoUrl", { required: "Video URL is required" })}
+              {...registerUrl("videoUrl", { required: "Video URL is required" })}
               id="videoUrl"
               className="w-full px-4 py-3 rounded-md border outline-none"
               placeholder="Enter video URL"
             />
             <span className="inline-block text-sm text-red-500">
-              {errors.videoUrl && errors.videoUrl.message}
+              {urlErrors.videoUrl && urlErrors.videoUrl.message}
             </span>
             <div className="flex justify-between mt-2">
               <Button type="submit" className="font-bold py-2 px-4 bg-blue-500 rounded-md text-white">
@@ -161,13 +168,15 @@ const InputForm = () => {
             </div>
           </div>
         </form>
-        <form onSubmit={onSubmitVideoFile} className="space-y-4">
+
+        <form onSubmit={handleSubmitFile(onSubmitVideoFile)} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="image" className="uppercase min-h-[200px] md:min-h-[400px] py-10 border-4 rounded-lg border-dashed bg-slate-100 flex items-center justify-center cursor-pointer">
               {fileName ? `Selected file: ${fileName}` : "Click to upload video file"}
             </label>
             <input
               type="file"
+              {...registerFile("image", { required: "Video file is required" })}
               id="image"
               className="hidden"
               accept="video/*"
@@ -185,9 +194,10 @@ const InputForm = () => {
               Submit this Video
             </Button>
           </div>
-          {errors.image && <span className="inline-block text-sm text-red-500">{errors.image.message}</span>}
+          {fileErrors.image && <span className="inline-block text-sm text-red-500">{fileErrors.image.message}</span>}
         </form>
       </div>
+
       {showMap && (
         <div style={{ width: '100%', height: '350px', marginTop: '20px' }}>
           <GoogleMap onMapClick={handleMapClick} />
