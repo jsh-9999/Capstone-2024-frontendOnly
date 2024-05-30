@@ -84,8 +84,6 @@ const InputForm = () => {
     try {
       if (file) {
         toast("Uploading video file...");
-        const localVideoUrl = URL.createObjectURL(file);
-        setVideo(localVideoUrl);
         const formData = new FormData();
         formData.append("file", file);
         formData.append("location", JSON.stringify(location));
@@ -103,7 +101,13 @@ const InputForm = () => {
         if (!uploadResponse.ok) {
           toast.error("Failed to upload video.");
         } else {
-          toast.success("Video uploaded successfully!");
+          const responseData = await uploadResponse.json();
+          if (responseData.hls_url) {
+            setVideo(responseData.hls_url); // 여기서 비디오 URL을 설정합니다.
+            toast.success("Video uploaded and ready to play!");
+          } else {
+            toast.error("Server did not return a valid HLS URL.");
+          }
         }
       } else {
         toast.error("No file selected or invalid file type.");
@@ -189,7 +193,7 @@ const InputForm = () => {
                   const selectedFile = files[0];
                   setFile(selectedFile);
                   setFileName(selectedFile.name);
-                  setVideo(URL.createObjectURL(selectedFile)); // Set the video URL
+                  // setVideo(URL.createObjectURL(selectedFile)); // 여기를 제거합니다.
                 }
               }}
             />
