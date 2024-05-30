@@ -38,10 +38,13 @@ const InputForm = () => {
       if (!data.videoUrl) return;
       toast("Uploading video URL...");
 
+      const authToken = localStorage.getItem("Authorization"); // Get the token from local storage
+
       const response = await fetch("http://capstone-aiserver.shop/api/v1/public/upload-link", {
         method: "POST",
         headers: { 
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': authToken ? `Bearer ${authToken}` : '', // Replace with your actual authorization token
         },
         body: JSON.stringify({ 
           video_link: data.videoUrl,
